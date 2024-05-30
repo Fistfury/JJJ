@@ -1,9 +1,8 @@
 import { createBrowserRouter } from "react-router-dom";
-
 import { Home } from "../Pages/Home";
-import { Admin } from "../Pages/Admin";
 import { Articles } from "../Pages/Articles";
 import { Layout } from "../Layout/Layout";
+import { AdminPage } from "../Pages/AdminPage";
 
 
 
@@ -19,7 +18,7 @@ export const router = createBrowserRouter([
             },
             {
                 path: "/admin",
-                element: <Admin />
+                element: <AdminPage />
             },
             {
                 path: "/articles",
