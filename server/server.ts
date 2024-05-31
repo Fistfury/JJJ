@@ -1,14 +1,29 @@
 import express from 'express';
-import { MongoClient } from 'mongodb';
-
-const url = 'mongodb://localhost:27017';
-const client = new MongoClient(url);
+import { connectToDatabase } from './config/db';
 
 const app = express();
-app.get('/', async (req, res) => {
-res.send('Hello World');
-})
+const PORT = process.env.PORT || 3000;
 
-app.listen(3000, async () => {
-console.log("Server running on port 3000");
-})
+app.get('/', (req, res) => {
+  res.send('Hello World');
+});
+
+app.get('/test-db', async (req, res) => {
+  try {
+    const db = await connectToDatabase();
+    const collection = db.collection('testCollection');
+    const data = await collection.find({}).toArray();
+    res.json(data);
+  } catch (error) {
+    res.status(500).send('Error connecting to the database');
+  }
+});
+
+app.listen(PORT, async () => {
+  try {
+    await connectToDatabase();
+    console.log(`Server running on port ${PORT}`);
+  } catch (error) {
+    console.error('Failed to start server due to database connection error', error);
+  }
+});
