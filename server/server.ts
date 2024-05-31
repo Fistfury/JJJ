@@ -1,5 +1,6 @@
 import express from 'express';
 import { connectToDatabase } from './config/db';
+import ArticleRoutes from './routes/ArticleRoutes';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -7,6 +8,8 @@ const PORT = process.env.PORT || 3000;
 app.get('/', (req, res) => {
   res.send('Hello World');
 });
+
+app.use('/api/articles', ArticleRoutes);
 
 app.get('/test-db', async (req, res) => {
   try {
