@@ -1,5 +1,4 @@
-// src/Pages/Admin.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import ArticleFormData from '../Interfaces/Articleformdata';
 
@@ -8,31 +7,72 @@ export const Admin: React.FC = () => {
   const [articles, setArticles] = useState<ArticleFormData[]>([]);
   const [editIndex, setEditIndex] = useState<number | null>(null);
 
-  const onSubmit: SubmitHandler<ArticleFormData> = (data) => {
-    if (editIndex !== null) {
-      const updatedArticles = articles.map((article, index) =>
-        index === editIndex ? data : article
-      );
-      setArticles(updatedArticles);
-      setEditIndex(null);
-    } else {
-      setArticles([...articles, data]);
+  useEffect(() => {
+    fetchArticles();
+  }, []);
+
+  const fetchArticles = async () => {
+    try {
+      const response = await fetch('http://localhost:3000/api/articles');
+      const data = await response.json();
+      setArticles(data);
+    } catch (error) {
+      console.error('Error fetching articles:', error);
     }
-    reset();
   };
 
-  const removeArticle = (index: number) => {
-    if (window.confirm("Are you sure you want to delete this article?")) {
+  const onSubmit: SubmitHandler<ArticleFormData> = async (data) => {
+    try {
+      if (editIndex !== null) {
+        const updatedArticles = articles.map((article, index) =>
+          index === editIndex ? data : article
+        );
+        setArticles(updatedArticles);
+        setEditIndex(null);
+        await fetch(`http://localhost:3000/api/articles/${articles[editIndex]._id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+        });
+      } else {
+        setArticles([...articles, data]);
+        await fetch('http://localhost:3000/api/articles', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+        });
+      }
+      reset();
+    } catch (error) {
+      console.error('Error submitting article:', error);
+    }
+  };
+
+  const removeArticle = async (index: number) => {
+    if (window.confirm('Are you sure you want to delete this article?')) {
+      const articleId = articles[index]._id;
       setArticles(articles.filter((_, i) => i !== index));
       if (editIndex === index) {
         reset();
         setEditIndex(null);
+      }
+      try {
+        await fetch(`http://localhost:3000/api/articles/${articleId}`, {
+          method: 'DELETE',
+        });
+      } catch (error) {
+        console.error('Error deleting article:', error);
       }
     }
   };
 
   const editArticle = (index: number) => {
     const article = articles[index];
+    /* setValue('_id', article._id) */
     setValue('title', article.title);
     setValue('content', article.content);
     setValue('subscriptionLevel', article.subscriptionLevel);
@@ -43,6 +83,7 @@ export const Admin: React.FC = () => {
     <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md mt-10">
       <h1 className="text-3xl font-bold mb-6 text-center">Admin Panel</h1>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+     {/*  <input type="hidden" {...register('_id')} /> */} 
         <div>
           <label className="block text-lg font-medium text-gray-700">Article Title</label>
           <input
@@ -108,5 +149,3 @@ export const Admin: React.FC = () => {
     </div>
   );
 };
-
-

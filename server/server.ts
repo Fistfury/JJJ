@@ -1,9 +1,14 @@
 import express from 'express';
+import cors from 'cors';
 import { connectToDatabase } from './config/db';
 import ArticleRoutes from './routes/ArticleRoutes';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+app.use(cors());
+
+app.use(express.json());
 
 app.get('/', (req, res) => {
   res.send('Hello World');
