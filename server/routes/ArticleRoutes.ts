@@ -20,12 +20,15 @@ router.post('/', async (req, res) => {
   try {
     const db: Db = await connectToDatabase();
     const article = req.body;
-    await db.collection('articles').insertOne(article);
-    res.status(201).send('Article created');
+    const result = await db.collection('articles').insertOne(article);
+    const createdArticle = await db.collection('articles').findOne({ _id: result.insertedId });
+    res.status(201).json(createdArticle); 
   } catch (error) {
+    console.error('Error creating article:', error);
     res.status(500).send('Error creating article');
   }
 });
+
 
 
 router.put('/:id', async (req, res) => {
@@ -45,6 +48,7 @@ router.delete('/:id', async (req, res) => {
   try {
     const db: Db = await connectToDatabase();
     const { id } = req.params;
+    console.log(`Attempting to delete article with id: ${id}`);
     await db.collection('articles').deleteOne({ _id: new ObjectId(id) });
     res.send('Article deleted');
   } catch (error) {
