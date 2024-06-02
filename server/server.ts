@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import { connectToDatabase } from './config/db';
 import ArticleRoutes from './routes/ArticleRoutes';
+import logger from './middleware/logger';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -9,6 +10,7 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 
 app.use(express.json());
+app.use(logger);
 
 app.get('/', (req, res) => {
   res.send('Hello World');
