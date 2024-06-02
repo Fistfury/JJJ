@@ -1,6 +1,4 @@
-// src/Pages/AdminPage.tsx
 import React, { useState } from 'react';
-
 import { Admin } from '../Components/Admin';
 import { AdminLogin } from '../Modals/AdminLogin';
 
