@@ -37,24 +37,29 @@ export const Admin: React.FC = () => {
           body: JSON.stringify(data),
         });
       } else {
-        setArticles([...articles, data]);
-        await fetch('http://localhost:3000/api/articles', {
+        const response = await fetch('http://localhost:3000/api/articles', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify(data),
         });
+        const newArticle = await response.json();
+        setArticles([...articles, newArticle]);
       }
       reset();
     } catch (error) {
       console.error('Error submitting article:', error);
     }
   };
-
+  
   const removeArticle = async (index: number) => {
     if (window.confirm('Are you sure you want to delete this article?')) {
       const articleId = articles[index]._id;
+      if (!articleId) {
+        console.error('Article ID is undefined');
+        return;
+      }
       setArticles(articles.filter((_, i) => i !== index));
       if (editIndex === index) {
         reset();
@@ -69,6 +74,7 @@ export const Admin: React.FC = () => {
       }
     }
   };
+  
 
   const editArticle = (index: number) => {
     const article = articles[index];
