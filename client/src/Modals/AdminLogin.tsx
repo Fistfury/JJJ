@@ -1,14 +1,28 @@
 import React from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, SubmitHandler } from 'react-hook-form';
 import AdminLoginFormData from '../Interfaces/AdminLoginFormData';
 import AdminLoginProps from '../Interfaces/AdminLoginProps';
-
 
 export const AdminLogin: React.FC<AdminLoginProps> = ({ isOpen, onClose, onLogin }) => {
   const { register, handleSubmit } = useForm<AdminLoginFormData>();
 
-  const onSubmit = (data: AdminLoginFormData) => {
-    onLogin(data);
+  const onSubmit: SubmitHandler<AdminLoginFormData> = async (data) => {
+    try {
+      const response = await fetch('http://localhost:3000/api/admin/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+      if (response.ok) {
+        onLogin(data);
+      } else {
+        alert('Invalid credentials');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+    }
   };
 
   if (!isOpen) return null;
@@ -19,11 +33,11 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ isOpen, onClose, onLogin
         <h2 className="text-xl font-bold mb-4">Admin Login</h2>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="mb-4">
-            <label className="block text-lg font-medium text-gray-700">Username</label>
+            <label className="block text-lg font-medium text-gray-700">Email</label>
             <input
-              {...register('username', { required: true })}
+              {...register('email', { required: true })}
               className="mt-1 p-2 w-full border border-gray-300 rounded-md"
-              placeholder="Enter username"
+              placeholder="Enter email"
             />
           </div>
           <div className="mb-4">
@@ -55,4 +69,3 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ isOpen, onClose, onLogin
     </div>
   );
 };
-

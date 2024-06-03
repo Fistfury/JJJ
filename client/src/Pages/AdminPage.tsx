@@ -4,15 +4,26 @@ import { AdminLogin } from '../Modals/AdminLogin';
 
 export const AdminPage: React.FC = () => {
   const [isLoginOpen, setIsLoginOpen] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(true);// <--- Change to false once ive fixed login
+  const [isAuthenticated, setIsAuthenticated] = useState(false); // <-- Change to false once you fix login
 
-  const handleLogin = (data: { username: string; password: string }) => {
+  const handleLogin = async (data: { email: string; password: string }) => {
+    try {
+      const response = await fetch('http://localhost:3000/api/admin/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
 
-    if (data.username === 'admin' && data.password === 'password') {
-      setIsAuthenticated(true);
-      setIsLoginOpen(false);
-    } else {
-      alert('Invalid credentials');
+      if (response.ok) {
+        setIsAuthenticated(true);
+        setIsLoginOpen(false);
+      } else {
+        alert('Invalid credentials');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
     }
   };
 
@@ -32,5 +43,3 @@ export const AdminPage: React.FC = () => {
     </div>
   );
 };
-
-

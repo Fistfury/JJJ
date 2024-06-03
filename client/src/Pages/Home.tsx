@@ -1,22 +1,60 @@
 import React, { useState } from 'react';
 import CustomerLogin from '../Modals/CustomerLogin';
 import CustomerRegister from '../Modals/CustomerRegister';
+import { CustomerRegisterFormData } from '../Interfaces/CustomerRegisterFormData';
+import { CustomerLoginFormData } from '../Interfaces/CustomerLoginFormData';
 
 export const Home: React.FC = () => {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
 
-  const handleLogin = (data: { username: string; password: string }) => {
-   
-    console.log('Login data:', data);
-    setIsLoginOpen(false);
+  const handleLogin = async (data: CustomerLoginFormData) => {
+    try {
+      const response = await fetch('http://localhost:3000/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log('Login data:', result);
+        setIsLoginOpen(false);
+      } else {
+        const error = await response.json();
+        console.error('Login error:', error);
+        alert('Login failed: ' + error);
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+    }
   };
 
-  const handleRegister = (data: { username: string; email: string; password: string }) => {
-   
-    console.log('Register data:', data);
-    setIsRegisterOpen(false);
-    setIsLoginOpen(true);
+  const handleRegister = async (data: CustomerRegisterFormData) => {
+    try {
+      const response = await fetch('http://localhost:3000/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log('Register data:', result);
+        setIsRegisterOpen(false);
+        setIsLoginOpen(true);
+      } else {
+        const error = await response.json();
+        console.error('Register error:', error);
+        alert('Registration failed: ' + error);
+      }
+    } catch (error) {
+      console.error('Register error:', error);
+    }
   };
 
   return (
