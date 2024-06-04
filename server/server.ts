@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import { connectToDatabase } from './config/db';
 import ArticleRoutes from './routes/ArticleRoutes';
+import PaymentRoutes from './routes/PaymentRoutes';
 import logger from './middleware/logger';
 
 const app = express();
@@ -17,6 +18,7 @@ app.get('/', (req, res) => {
 });
 
 app.use('/api/articles', ArticleRoutes);
+app.use('/api/payments', PaymentRoutes);
 
 app.get('/test-db', async (req, res) => {
   try {
