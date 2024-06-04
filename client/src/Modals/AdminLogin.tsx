@@ -3,12 +3,12 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 import AdminLoginFormData from '../Interfaces/AdminLoginFormData';
 import AdminLoginProps from '../Interfaces/AdminLoginProps';
 
-export const AdminLogin: React.FC<AdminLoginProps> = ({ isOpen, onClose, onLogin, onOpenRegister }) => {
+export const AdminLogin: React.FC<AdminLoginProps> = ({ isOpen, onClose, onLogin}) => {
   const { register, handleSubmit } = useForm<AdminLoginFormData>();
 
   const onSubmit: SubmitHandler<AdminLoginFormData> = async (data) => {
     try {
-      const response = await fetch('http://localhost:3000/api/admin/login', {
+      const response = await fetch('http://localhost:3000/api/auth/adminlogin', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -65,15 +65,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ isOpen, onClose, onLogin
             </button>
           </div>
         </form>
-        <div className="mt-4 text-center">
-          <button
-            type="button"
-            onClick={onOpenRegister}
-            className="text-blue-600 hover:underline"
-          >
-            Don't have an account? Register here
-          </button>
-        </div>
+       
       </div>
     </div>
   );

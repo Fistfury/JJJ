@@ -1,12 +1,16 @@
 import { Router } from 'express';
-import { register, login, loginAdmin, logout, authorize } from '../controllers/AuthController';
+import {
+    getArticles,
+    createArticle,
+    updateArticle,
+    deleteArticle,
+  } from '../controllers/ArticleController';
 
 const router = Router();
 
-router.post('/register', register);
-router.post('/login', login);
-router.post('/admin/login', loginAdmin);
-router.post('/logout', logout);
-router.get('/authorize', authorize);
+router.get('/', getArticles);
+router.post('/', createArticle);
+router.put('/:id', updateArticle);
+router.delete('/:id', deleteArticle);
 
 export default router;
