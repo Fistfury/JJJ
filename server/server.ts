@@ -3,6 +3,7 @@ import cors from 'cors';
 import { connectToDatabase } from './config/db';
 import ArticleRoutes from './routes/ArticleRoutes';
 import logger from './middleware/logger';
+import SubscriptionRoutes from './routes/SubscriptionRoutes';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -17,6 +18,7 @@ app.get('/', (req, res) => {
 });
 
 app.use('/api/articles', ArticleRoutes);
+app.use('/api/subscriptions', SubscriptionRoutes);
 
 app.get('/test-db', async (req, res) => {
   try {
