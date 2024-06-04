@@ -1,3 +1,5 @@
+import dotenv from 'dotenv';
+dotenv.config();
 import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
@@ -10,11 +12,12 @@ import logger from './middleware/logger';
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+app.use(logger);
 app.use(cors());
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(sessionMiddleware);
-app.use(logger);
+
 
 app.use('/api/auth', AuthRoutes);
 app.use('/api/articles', ArticleRoutes);
