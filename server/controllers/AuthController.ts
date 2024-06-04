@@ -1,11 +1,8 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
-import Stripe from 'stripe';
+import { stripe } from '../config/stripe';
 import { getCollection } from '../config/db';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
-    apiVersion: '2024-04-10',
-});
 
 interface User {
     email: string;
