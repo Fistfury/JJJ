@@ -6,11 +6,8 @@ import bodyParser from 'body-parser';
 import sessionMiddleware from './middleware/session';
 import AuthRoutes from './routes/AuthRoutes';
 import ArticleRoutes from './routes/ArticleRoutes';
-<<<<<<< HEAD
 import { connectToDatabase } from './config/db';
-=======
 import PaymentRoutes from './routes/PaymentRoutes';
->>>>>>> Payments
 import logger from './middleware/logger';
 
 const app = express();
@@ -30,8 +27,6 @@ app.get('/', (req, res) => {
   res.send('Hello World');
 });
 
-<<<<<<< HEAD
-=======
 app.use('/api/articles', ArticleRoutes);
 app.use('/api/payments', PaymentRoutes);
 
@@ -46,7 +41,6 @@ app.get('/test-db', async (req, res) => {
   }
 });
 
->>>>>>> Payments
 app.listen(PORT, async () => {
   try {
     await connectToDatabase();
