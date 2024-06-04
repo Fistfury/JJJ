@@ -1,7 +1,7 @@
-import { MongoClient, Db } from 'mongodb';
+import { MongoClient, Db, Collection, Document } from 'mongodb';
 
 const url = 'mongodb://localhost:27017';
-const dbName = 'JJJ'; 
+const dbName = 'JJJ';
 
 let db: Db;
 
@@ -20,4 +20,9 @@ export const connectToDatabase = async (): Promise<Db> => {
     console.error('Failed to connect to the database', error);
     throw error;
   }
+};
+
+export const getCollection = async <T extends Document>(collectionName: string): Promise<Collection<T>> => {
+  const database = await connectToDatabase();
+  return database.collection<T>(collectionName);
 };

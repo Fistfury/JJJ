@@ -1,6 +1,7 @@
 interface AdminLoginProps {
     isOpen: boolean;
     onClose: () => void;
-    onLogin: (data: { username: string; password: string }) => void;
+    onLogin: (data: { email: string; password: string }) => void;
+    onOpenRegister: () => void;
   }
   export default AdminLoginProps;
