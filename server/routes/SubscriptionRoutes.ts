@@ -5,6 +5,6 @@ const router = Router();
 
 router.get("/", getSubscriptionLevels);
 router.post("/create", createSubscription);
-router.put("/update:id", updateSubscription);
+router.put("/update/:id", updateSubscription);
 
 export default router;

@@ -32,7 +32,7 @@ export const createSubscription = async (req: Request, res: Response) => {
     };
 
 export const getArticles = async (req: Request, res: Response) => {
-    try {
+    try { // TODO JLo: get articles sub lvl 
       const db = await connectToDatabase();
       const articles = await db.collection('articles').find({}).toArray();
       res.json(articles);
@@ -41,14 +41,6 @@ export const getArticles = async (req: Request, res: Response) => {
     }
   };
 
-
-export const updateSubscription = async (req: Request, res: Response) => {
-    try {
-        const db = await connectToDatabase();
-        const user = db.collection("users");
-        const updatedSubscription = await user.updateOne({ "_id": req.body._id }, { "$set": { "subscriptionLevel": req.body.subscriptionLevel } });
-        res.json(updatedSubscription);
-    } catch (error) {
-        res.status(500).send("Error updating subscription");
-    }
-}; //// NOT WORKING AT ALL 
+  export const updateSubscription = async (req: Request, res: Response) => {
+      // TODO JLo: insert code that actually works
+  }
