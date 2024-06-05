@@ -1,5 +1,5 @@
 interface AdminLoginFormData {
-    username: string;
+    email: string;
     password: string;
   }
 

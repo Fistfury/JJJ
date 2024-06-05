@@ -1,17 +1,28 @@
+import dotenv from 'dotenv';
+dotenv.config();
 import express from 'express';
 import cors from 'cors';
-import { connectToDatabase } from './config/db';
+import bodyParser from 'body-parser';
+import sessionMiddleware from './middleware/session';
+import AuthRoutes from './routes/AuthRoutes';
 import ArticleRoutes from './routes/ArticleRoutes';
+import { connectToDatabase } from './config/db';
+import PaymentRoutes from './routes/PaymentRoutes';
 import logger from './middleware/logger';
 import SubscriptionRoutes from './routes/SubscriptionRoutes';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(cors());
-
-app.use(express.json());
 app.use(logger);
+app.use(cors());
+app.use(express.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(sessionMiddleware);
+
+
+app.use('/api/auth', AuthRoutes);
+app.use('/api/articles', ArticleRoutes);
 
 app.get('/', (req, res) => {
   res.send('Hello World');
@@ -19,6 +30,7 @@ app.get('/', (req, res) => {
 
 app.use('/api/articles', ArticleRoutes);
 app.use('/api/subscriptions', SubscriptionRoutes);
+app.use('/api/payments', PaymentRoutes);
 
 app.get('/test-db', async (req, res) => {
   try {

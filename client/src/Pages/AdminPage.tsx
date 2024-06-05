@@ -4,16 +4,11 @@ import { AdminLogin } from '../Modals/AdminLogin';
 
 export const AdminPage: React.FC = () => {
   const [isLoginOpen, setIsLoginOpen] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(true);// <--- Change to false once ive fixed login
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  const handleLogin = (data: { username: string; password: string }) => {
-
-    if (data.username === 'admin' && data.password === 'password') {
-      setIsAuthenticated(true);
-      setIsLoginOpen(false);
-    } else {
-      alert('Invalid credentials');
-    }
+  const handleLogin = () => {
+    setIsAuthenticated(true);
+    setIsLoginOpen(false);
   };
 
   return (
@@ -32,5 +27,4 @@ export const AdminPage: React.FC = () => {
     </div>
   );
 };
-
 
