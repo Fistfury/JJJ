@@ -8,6 +8,7 @@ import AuthRoutes from './routes/AuthRoutes';
 import ArticleRoutes from './routes/ArticleRoutes';
 import { connectToDatabase } from './config/db';
 import PaymentRoutes from './routes/PaymentRoutes';
+import StripeRoutes from './routes/StripeRoutes';
 import logger from './middleware/logger';
 import SubscriptionRoutes from './routes/SubscriptionRoutes';
 
@@ -28,9 +29,9 @@ app.get('/', (req, res) => {
   res.send('Hello World');
 });
 
-app.use('/api/articles', ArticleRoutes);
 app.use('/api/subscriptions', SubscriptionRoutes);
 app.use('/api/payments', PaymentRoutes);
+app.use('/api/stripe', StripeRoutes);
 
 app.get('/test-db', async (req, res) => {
   try {
