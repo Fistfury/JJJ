@@ -3,10 +3,13 @@ import CustomerLogin from '../Modals/CustomerLogin';
 import CustomerRegister from '../Modals/CustomerRegister';
 import { CustomerRegisterFormData } from '../Interfaces/CustomerRegisterFormData';
 import { CustomerLoginFormData } from '../Interfaces/CustomerLoginFormData';
+import Subscribe from '../Modals/Subscribe';
+import { SubscribeFormData } from '../Interfaces/SubscribeFormData';
 
 export const Home: React.FC = () => {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
+  const [isSubscibeOpen, setIsSubscibeOpen] = useState(false);
 
   const handleLogin = async (data: CustomerLoginFormData) => {
     try {
@@ -57,6 +60,28 @@ export const Home: React.FC = () => {
     }
   };
 
+  const handleSubscribe = async (data: SubscribeFormData) => {
+    try {
+      const response = await fetch('http://localhost:3000/api/subscription/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    });
+    if (response.ok) {
+      const result = await response.json();
+      console.log('Subscription data:', result);
+    } else {
+      const error = await response.json();
+      console.error('Subscription error:', error);
+    }
+    } catch (error) {
+      console.error('Subscription error:', error);
+    }
+  }
+  
+
   return (
     <div className="container mx-auto py-10">
       <h1 className="text-red-700">Home</h1>
@@ -73,6 +98,8 @@ export const Home: React.FC = () => {
         >
           Customer Register
         </button>
+        <button onClick={() => setIsSubscibeOpen(true)} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+          Subscribe</button> 
       </div>
       {isLoginOpen && (
         <CustomerLogin
@@ -90,6 +117,13 @@ export const Home: React.FC = () => {
           isOpen={isRegisterOpen}
           onClose={() => setIsRegisterOpen(false)}
           onRegister={handleRegister}
+        />
+      )}
+      {isSubscibeOpen && (
+        <Subscribe
+          isOpen={isSubscibeOpen}
+          onClose={() => setIsSubscibeOpen(false)}
+          onSubscribe={handleSubscribe}
         />
       )}
     </div>
