@@ -4,6 +4,7 @@ import { Layout } from "../Layout/Layout";
 import { AdminPage } from "../Pages/AdminPage";
 import { PaymentSuccess } from "../Pages/PaymentSuccess";
 import { PaymentFailed } from "../Pages/PaymentFailed";
+import Subscribe from "../Modals/Subscribe";
 
 
 
@@ -29,6 +30,10 @@ export const router = createBrowserRouter([
             {
                 path: "/payment-failed",
                 element: <PaymentFailed />
+            },
+            {
+                path: "/subscribe",
+                element: <Subscribe />
             },
 
 
