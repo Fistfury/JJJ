@@ -1,23 +1,22 @@
 import { Request, Response } from 'express';
 import { connectToDatabase } from '../config/db';
 import { stripe } from '../config/stripe';
+import { ObjectId } from 'mongodb';
 
-export const createPayment = async (req: Request, res: Response) => {
+export const createPayment = async (req: Request, res: Response): Promise<void> => {
     const { userId, subscriptionId } = req.body;
 
     try {
         const db = await connectToDatabase();
-        const subscription = await db.collection('subscriptions').findOne({ _id: subscriptionId });
+        const subscription = await db.collection('subscriptions').findOne({ _id: new ObjectId(subscriptionId) });
 
         if (!subscription) {
-            return res.status(404).json({ message: 'Subscription not found' });
+            res.status(404).json({ message: 'Subscription not found' });
+            return;
         }
 
-        const amount = subscription.price;
-
-        // Skapa en ny betalningsintent med Stripe
         const paymentIntent = await stripe.paymentIntents.create({
-            amount: amount * 100, 
+            amount: subscription.price * 100,
             currency: 'sek',
             metadata: { userId, subscriptionId }
         });
@@ -25,7 +24,7 @@ export const createPayment = async (req: Request, res: Response) => {
         res.status(201).json({ success: true, clientSecret: paymentIntent.client_secret });
     } catch (error: any) {
         console.error('Payment creation failed:', error);
-        res.status(500).json({ message: 'Failed to create payment', error: error.message});
+        res.status(500).json({ message: 'Failed to create payment', error: error.message });
     }
 };
 

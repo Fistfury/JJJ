@@ -9,6 +9,7 @@ import ArticleRoutes from './routes/ArticleRoutes';
 import { connectToDatabase } from './config/db';
 import PaymentRoutes from './routes/PaymentRoutes';
 import StripeRoutes from './routes/StripeRoutes';
+import { handleStripeWebhook } from './middleware/stripeWebhooks';
 import logger from './middleware/logger';
 import SubscriptionRoutes from './routes/SubscriptionRoutes';
 
@@ -32,6 +33,7 @@ app.get('/', (req, res) => {
 app.use('/api/subscriptions', SubscriptionRoutes);
 app.use('/api/payments', PaymentRoutes);
 app.use('/api/stripe', StripeRoutes);
+app.post('/webhook', express.raw({type: 'application/json'}), handleStripeWebhook);
 
 app.get('/test-db', async (req, res) => {
   try {

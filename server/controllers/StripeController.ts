@@ -4,7 +4,7 @@ import { stripe } from "../config/stripe";
 export class StripeController {
     static async createCheckoutSession(req: Request, res: Response): Promise<void> {
         try {
-            const { priceId } = req.body;
+            const { priceId, userId, subscriptionId } = req.body;
             const session = await stripe.checkout.sessions.create({
                 payment_method_types: ['card'],
                 line_items: [{
@@ -12,8 +12,12 @@ export class StripeController {
                     quantity: 1,
                 }],
                 mode: 'subscription',
-                success_url: `${process.env.BASE_URL}/payment-success`,
+                success_url: `${process.env.BASE_URL}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
                 cancel_url: `${process.env.BASE_URL}/payment-failed`,
+                metadata: {
+                    userId: userId,
+                    subscriptionId: subscriptionId
+                }
             });
             res.json({ sessionId: session.id, url: session.url });
         } catch (error: any) {
