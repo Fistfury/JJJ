@@ -3,9 +3,7 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 import { CustomerLoginFormData } from '../Interfaces/CustomerLoginFormData';
 import { CustomerLoginProps } from '../Interfaces/CustomerLoginProps';
 
-
-
-const CustomerLogin: React.FC<CustomerLoginProps> = ({ isOpen, onClose, onLogin, onRegister }) => {
+export const CustomerLogin: React.FC<CustomerLoginProps> = ({ isOpen, onClose, onLogin, onRegister }) => {
   const { register, handleSubmit } = useForm<CustomerLoginFormData>();
 
   const onSubmit: SubmitHandler<CustomerLoginFormData> = (data) => {
@@ -19,14 +17,14 @@ const CustomerLogin: React.FC<CustomerLoginProps> = ({ isOpen, onClose, onLogin,
       <div className="bg-white p-8 rounded shadow-lg w-1/3">
         <h2 className="text-xl font-bold mb-4">Customer Login</h2>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-           <div className="mb-4">
+          <div className="mb-4">
             <label className="block text-lg font-medium text-gray-700">Email</label>
             <input
               {...register('email', { required: true })}
               className="mt-1 p-2 w-full border border-gray-300 rounded-md"
               placeholder="Enter email"
             />
-          </div> 
+          </div>
           <div className="mb-4">
             <label className="block text-lg font-medium text-gray-700">Password</label>
             <input
@@ -66,4 +64,4 @@ const CustomerLogin: React.FC<CustomerLoginProps> = ({ isOpen, onClose, onLogin,
   );
 };
 
-export default CustomerLogin;
+

@@ -1,17 +1,21 @@
 import React, { useState } from 'react';
-import CustomerLogin from '../Modals/CustomerLogin';
-import CustomerRegister from '../Modals/CustomerRegister';
+import {CustomerLogin} from '../Modals/CustomerLogin';
+import {CustomerRegister} from '../Modals/CustomerRegister';
 import { CustomerRegisterFormData } from '../Interfaces/CustomerRegisterFormData';
 import { CustomerLoginFormData } from '../Interfaces/CustomerLoginFormData';
+import { useAuth } from '../Contexts/AuthContext';
 import Subscribe from '../Modals/Subscribe';
 import { SubscribeFormData } from '../Interfaces/SubscribeFormData';
 
 export const Home: React.FC = () => {
+  const { setIsAuthenticated } = useAuth();
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
+ 
   const [isSubscibeOpen, setIsSubscibeOpen] = useState(false);
 
   const handleLogin = async (data: CustomerLoginFormData) => {
+    console.log('handleLogin called', data);
     try {
       const response = await fetch('http://localhost:3000/api/auth/login', {
         method: 'POST',
@@ -20,10 +24,11 @@ export const Home: React.FC = () => {
         },
         body: JSON.stringify(data)
       });
-
+ 
       if (response.ok) {
         const result = await response.json();
         console.log('Login data:', result);
+        setIsAuthenticated(true);
         setIsLoginOpen(false);
       } else {
         const error = await response.json();
@@ -34,8 +39,9 @@ export const Home: React.FC = () => {
       console.error('Login error:', error);
     }
   };
-
+ 
   const handleRegister = async (data: CustomerRegisterFormData) => {
+    console.log('handleRegister called', data);
     try {
       const response = await fetch('http://localhost:3000/api/auth/register', {
         method: 'POST',
@@ -44,7 +50,7 @@ export const Home: React.FC = () => {
         },
         body: JSON.stringify(data)
       });
-
+ 
       if (response.ok) {
         const result = await response.json();
         console.log('Register data:', result);
@@ -59,6 +65,30 @@ export const Home: React.FC = () => {
       console.error('Register error:', error);
     }
   };
+ 
+  const handleLogout = async () => {
+    console.log('handleLogout called');
+    try {
+      const response = await fetch('http://localhost:3000/api/auth/logout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+ 
+      if (response.ok) {
+        console.log('Logout successful');
+        setIsAuthenticated(false);
+      } else {
+        const error = await response.json();
+        console.error('Logout error:', error);
+        alert('Logout failed: ' + error);
+      }
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
+ 
 
   const handleSubscribe = async (data: SubscribeFormData) => {
     try {
@@ -87,26 +117,42 @@ export const Home: React.FC = () => {
       <h1 className="text-red-700">Home</h1>
       <div className="flex space-x-4 mt-4">
         <button
-          onClick={() => setIsLoginOpen(true)}
+          onClick={() => {
+            console.log('Open login modal');
+            setIsLoginOpen(true);
+          }}
           className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
         >
           Customer Login
         </button>
         <button
-          onClick={() => setIsRegisterOpen(true)}
+          onClick={() => {
+            console.log('Open register modal');
+            setIsRegisterOpen(true);
+          }}
           className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
         >
           Customer Register
         </button>
         <button onClick={() => setIsSubscibeOpen(true)} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
           Subscribe</button> 
+        <button
+          onClick={handleLogout}
+          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+        >
+          Logout
+        </button>
       </div>
       {isLoginOpen && (
         <CustomerLogin
           isOpen={isLoginOpen}
-          onClose={() => setIsLoginOpen(false)}
+          onClose={() => {
+            console.log('Close login modal');
+            setIsLoginOpen(false);
+          }}
           onLogin={handleLogin}
           onRegister={() => {
+            console.log('Switch to register modal');
             setIsLoginOpen(false);
             setIsRegisterOpen(true);
           }}
@@ -115,7 +161,10 @@ export const Home: React.FC = () => {
       {isRegisterOpen && (
         <CustomerRegister
           isOpen={isRegisterOpen}
-          onClose={() => setIsRegisterOpen(false)}
+          onClose={() => {
+            console.log('Close register modal');
+            setIsRegisterOpen(false);
+          }}
           onRegister={handleRegister}
         />
       )}
@@ -128,6 +177,5 @@ export const Home: React.FC = () => {
       )}
     </div>
   );
-};
-
-
+}
+ 
