@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import logo from '../assets/logo_3.png';
+import logo from '../assets/logo-15.png';
 
 interface NavBarProps {
   isAuthenticated: boolean;
@@ -9,13 +9,12 @@ interface NavBarProps {
 
 export const NavBar: React.FC<NavBarProps> = ({ isAuthenticated, handleLogout }) => {
     return (
-        <nav className="glass fixed top-0 left-0 right-0 z-50 p-2 bg-opacity-50">
-        <div className="container mx-auto flex justify-between items-center h-16 pt-2 pb-2">
-          <div className="flex items-center">
-            <img src={logo} alt="Logo" style={{ height: '100px', width: '100px', marginRight: '8px' }} /> 
-            
+      <nav className="glass fixed top-0 left-0 right-0 z-50 p-2 bg-opacity-50">
+        <div className="flex justify-between items-center h-12 mx-4">
+          <div className="flex items-center ml-4">
+            <img src={logo} alt="Logo" style={{ height: '3rem', width: '3rem'}} /> 
           </div>
-          <ul className="flex space-x-4 text-xl gap-8">
+          <ul className="flex space-x-4 text-xl gap-8 mr-4">
             <li>
               <Link to="/" className="text-white hover:text-gray-300">Home</Link>
             </li>
