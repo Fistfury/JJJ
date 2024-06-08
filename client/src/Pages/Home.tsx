@@ -6,6 +6,8 @@ import { CustomerLoginFormData } from '../Interfaces/CustomerLoginFormData';
 import { useAuth } from '../Contexts/AuthContext';
 import Subscribe from '../Modals/Subscribe';
 import { SubscribeFormData } from '../Interfaces/SubscribeFormData';
+import logo from '../assets/logo-14.png';
+import { motion } from 'framer-motion';
 
 export const Home: React.FC = () => {
   const { setIsAuthenticated } = useAuth();
@@ -113,54 +115,63 @@ export const Home: React.FC = () => {
   return (
     <div className="min-h-screen bg-cover bg-center">
     <div className="flex flex-col items-center justify-center h-full text-white bg-opacity-50 bg-black">
-      <h1 className="text-5xl font-bold mt-32">Triple J</h1>
-      <p className="mt-4 text-lg">CHOOSE A CATEGORY</p>
-      <div className="mt-8 mb-20 p-20 glass rounded-xl shadow-lg grid grid-cols-3 gap-9" style={{ width: "660px" }}>
-        <div className="flex flex-col items-center cursor-pointer" onClick={() => setIsLoginOpen(true)}>
-          <div className="p-4 bg-opacity-50 bg-gray-900 rounded-full">
-            <i className="fas fa-robot text-4xl"></i>
+    <div className="flex items-center mt-32">
+            <img src={logo} alt="Logo" style={{ height: '13rem', width: '27rem', marginRight: '2rem' }} /> 
+            
           </div>
-          <p className="mt-2">AI</p>
-        </div>
-        <div className="flex flex-col items-center cursor-pointer" onClick={() => setIsLoginOpen(true)}>
-          <div className="p-4 bg-opacity-50 bg-gray-900 rounded-full">
-            <i className="fas fa-shield-alt text-4xl"></i> 
+      <p className=" text-lg">CHOOSE A CATEGORY</p>
+      <motion.div
+          initial={{ x: '-100vw' }}
+          animate={{ x: 0 }}
+          transition={{ type: 'spring', stiffness: 100, damping: 20 }}
+          className="mt-8 mb-20 p-20 glass rounded-xl shadow-lg grid grid-cols-3 gap-9"
+          style={{ width: "660px" }}
+        >
+          <div className="flex flex-col items-center cursor-pointer transform transition-transform duration-300 hover:scale-105" onClick={() => setIsLoginOpen(true)}>
+            <div className="p-4 bg-opacity-50 bg-gray-900 rounded-full">
+              <i className="fas fa-robot text-4xl"></i>
+            </div>
+            <p className="mt-2">AI</p>
           </div>
-          <p className="mt-2">Cybersecurity</p>
-        </div>
-        <div className="flex flex-col items-center cursor-pointer" onClick={() => setIsLoginOpen(true)}>
-          <div className="p-4 bg-opacity-50 bg-gray-900 rounded-full">
-            <i className="fas fa-cube text-4xl"></i> 
+          <div className="flex flex-col items-center cursor-pointer transform transition-transform duration-300 hover:scale-105" onClick={() => setIsLoginOpen(true)}>
+            <div className="p-4 bg-opacity-50 bg-gray-900 rounded-full">
+              <i className="fas fa-shield-alt text-4xl"></i> 
+            </div>
+            <p className="mt-2">Cybersecurity</p>
           </div>
-          <p className="mt-2">Blockchain</p>
-        </div>
-        <div className="flex flex-col items-center cursor-pointer" onClick={() => setIsLoginOpen(true)}>
-          <div className="p-4 bg-opacity-50 bg-gray-900 rounded-full">
-            <i className="fas fa-cloud text-4xl"></i> 
+          <div className="flex flex-col items-center cursor-pointer transform transition-transform duration-300 hover:scale-105" onClick={() => setIsLoginOpen(true)}>
+            <div className="p-4 bg-opacity-50 bg-gray-900 rounded-full">
+              <i className="fas fa-cube text-4xl"></i> 
+            </div>
+            <p className="mt-2">Blockchain</p>
           </div>
-          <p className="mt-2">Cloud Computing</p>
-        </div>
-        <div className="flex flex-col items-center cursor-pointer" onClick={() => setIsLoginOpen(true)}>
-          <div className="p-4 bg-opacity-50 bg-gray-900 rounded-full">
-            <i className="fas fa-laptop text-4xl"></i> 
+          <div className="flex flex-col items-center cursor-pointer transform transition-transform duration-300 hover:scale-105" onClick={() => setIsLoginOpen(true)}>
+            <div className="p-4 bg-opacity-50 bg-gray-900 rounded-full">
+              <i className="fas fa-cloud text-4xl"></i> 
+            </div>
+            <p className="mt-2">Cloud Computing</p>
           </div>
-          <p className="mt-2">Tech Industri</p>
-        </div>
-        <div className="flex flex-col items-center cursor-pointer" onClick={() => setIsLoginOpen(true)}>
-          <div className="p-4 bg-opacity-50 bg-gray-900 rounded-full">
-            <i className="fas fa-network-wired text-4xl"></i> 
+          <div className="flex flex-col items-center cursor-pointer transform transition-transform duration-300 hover:scale-105" onClick={() => setIsLoginOpen(true)}>
+            <div className="p-4 bg-opacity-50 bg-gray-900 rounded-full">
+              <i className="fas fa-laptop text-4xl"></i> 
+            </div>
+            <p className="mt-2">Tech Industri</p>
           </div>
-          <p className="mt-2">IoT</p>
-        </div>
-      </div>
+          <div className="flex flex-col items-center cursor-pointer transform transition-transform duration-300 hover:scale-105" onClick={() => setIsLoginOpen(true)}>
+            <div className="p-4 bg-opacity-50 bg-gray-900 rounded-full">
+              <i className="fas fa-network-wired text-4xl"></i> 
+            </div>
+            <p className="mt-2">IoT</p>
+          </div>
+        </motion.div>
       <div className="mt-12 flex space-x-4">
-        <a href="https://www.instagram.com" target="_blank" rel="noopener noreferrer">
+        <a href="https://www.instagram.com" target="_blank" rel="#">
           <i className="fab fa-instagram text-2xl"></i>
         </a>
-        <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer">
+        <a href="https://www.facebook.com" target="_blank" rel="#">
           <i className="fab fa-facebook text-2xl"></i>
         </a>
-        <a href="https://www.twitter.com" target="_blank" rel="noopener noreferrer">
+        <a href="https://www.twitter.com" target="_blank" rel="#">
           <i className="fab fa-twitter text-2xl"></i>
         </a>
       </div>
