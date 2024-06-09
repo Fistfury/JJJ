@@ -20,7 +20,7 @@ export const RouterWrapper = () => {
       element: <Layout />,
       children: [
         { path: '/', element: <Home />, index: true },
-        { path: '/admin', element: isAuthenticated ? <AdminPage /> : <CustomerLoginWrapper /> },
+        { path: '/admin', element:  <AdminPage />  },
         { path: '/account', element: isAuthenticated ? <Account /> : <CustomerLoginWrapper /> },
         { path: '/login', element: <CustomerLoginWrapper /> },
         { path: '/register', element: <CustomerRegisterWrapper /> },

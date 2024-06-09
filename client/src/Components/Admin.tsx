@@ -89,13 +89,21 @@ export const Admin: React.FC = () => {
     <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md mt-10">
       <h1 className="text-3xl font-bold mb-6 text-center">Admin Panel</h1>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-     {/*  <input type="hidden" {...register('_id')} /> */} 
+        
         <div>
           <label className="block text-lg font-medium text-gray-700">Article Title</label>
           <input
             {...register('title', { required: true })}
             className="mt-1 p-2 w-full border border-gray-300 rounded-md"
             placeholder="Enter article title"
+          />
+        </div>
+        <div>
+          <label className="block text-lg font-medium text-gray-700">Article Image</label>
+          <input
+            {...register('imageUrl', { required: true })}
+            className="mt-1 p-2 w-full border border-gray-300 rounded-md"
+            placeholder="Enter image URL"
           />
         </div>
         <div>
@@ -134,6 +142,9 @@ export const Admin: React.FC = () => {
               <h3 className="text-xl font-bold">{article.title}</h3>
               <p>{article.content}</p>
               <span className="text-sm text-gray-500">Subscription Level: {article.subscriptionLevel}</span>
+              <div>
+              <span className="text-sm text-gray-500">Image: {article.imageUrl}</span>
+              </div>
             </div>
             <div className="flex space-x-2">
               <button
