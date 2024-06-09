@@ -9,7 +9,7 @@ import { SubscribeFormData } from '../Interfaces/SubscribeFormData';
 export const Home: React.FC = () => {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
-  const [isSubscibeOpen, setIsSubscibeOpen] = useState(false);
+  const [isSubscribeOpen, setIsSubscribeOpen] = useState(false);
 
   const handleLogin = async (data: CustomerLoginFormData) => {
     try {
@@ -62,7 +62,7 @@ export const Home: React.FC = () => {
 
   const handleSubscribe = async (data: SubscribeFormData) => {
     try {
-      const response = await fetch('http://localhost:3000/api/subscription/create', {
+      const response = await fetch('http://localhost:3000/api/subscriptions/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -98,7 +98,7 @@ export const Home: React.FC = () => {
         >
           Customer Register
         </button>
-        <button onClick={() => setIsSubscibeOpen(true)} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+        <button onClick={() => setIsSubscribeOpen(true)} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
           Subscribe</button> 
       </div>
       {isLoginOpen && (
@@ -119,10 +119,10 @@ export const Home: React.FC = () => {
           onRegister={handleRegister}
         />
       )}
-      {isSubscibeOpen && (
+      {isSubscribeOpen && (
         <Subscribe
-          isOpen={isSubscibeOpen}
-          onClose={() => setIsSubscibeOpen(false)}
+          isOpen={isSubscribeOpen}
+          onClose={() => setIsSubscribeOpen(false)}
           onSubscribe={handleSubscribe}
         />
       )}

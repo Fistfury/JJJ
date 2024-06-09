@@ -30,14 +30,15 @@ export const getSubscriptionLevels = async (req: Request, res: Response) => {
 
 export const createSubscription = async (req: Request, res: Response) => {
     const { subscriptionLevel } = req.body;
-    let email = (req.session as Session).user?.email 
+    let email = (req.session as Session).user?.email
 
     try {
     const db = await connectToDatabase();
     const user = db.collection("user");
     const collection = db.collection("subscriptions");
     const userExists = await collection.findOne({ "email": email });
-    // TODOJLo testa email hittas
+    
+    // TODOJLo find user email instead of null
 
 
     if (userExists && userExists.subscriptionLevel === subscriptionLevel) {
@@ -63,7 +64,9 @@ export const createSubscription = async (req: Request, res: Response) => {
     }
     };
 
-    export const deleteSubscription = async (req: Request, res: Response) => {
+
+
+/*     export const deleteSubscription = async (req: Request, res: Response) => {
         try {
             const db = await connectToDatabase();
             const { id } = req.params;
@@ -72,7 +75,7 @@ export const createSubscription = async (req: Request, res: Response) => {
         } catch (error) {
             res.status(500).send('Error deleting subscription');
         }
-    }; 
+    };  */
     // TODO JLo:
     // update (ändra status) ist för delete 
     // göra en noll-lvl 
