@@ -1,6 +1,7 @@
 import { ObjectId } from "mongodb";
 import { connectToDatabase } from "../config/db";
 import { Request, Response } from "express";
+import { SubscriptionLevel } from "../models/SubscriptionModel";
 
 interface User {
     email: string;
@@ -40,7 +41,6 @@ export const createSubscription = async (req: Request, res: Response) => {
     
     // TODOJLo find user email instead of null
 
-
     if (userExists && userExists.subscriptionLevel === subscriptionLevel) {
         return res.status(409).send("Already subscribed");
 
@@ -65,21 +65,23 @@ export const createSubscription = async (req: Request, res: Response) => {
     };
 
 
-
-/*     export const deleteSubscription = async (req: Request, res: Response) => {
+    export const pauseSubscription = async (req: Request, res: Response) => {
         try {
-            const db = await connectToDatabase();
-            const { id } = req.params;
-            await db.collection('subscriptions').deleteOne({ _id: new ObjectId(id) });
-            res.send('Subscription deleted');
+        const db = await connectToDatabase();
+        const { id } = req.params;
+        // TODO Jlo: get user or id from session
+        const subscriptionLevel = "noob";
+        await db.collection('subscriptions').updateOne({ _id: new ObjectId(id) }, { $set: { subscriptionLevel: "noob" } });
+        // TODO JLo: check date 
+        
+        res.send("Subscription paused");
+                
         } catch (error) {
-            res.status(500).send('Error deleting subscription');
+            console.error("Error pausing subscription:", error);
+            res.status(500).send("Error pausing subscription");
         }
-    };  */
-    // TODO JLo:
-    // update (ändra status) ist för delete 
-    // göra en noll-lvl 
-    // få in datum 
+    };
+
 
 export const getArticles = async (req: Request, res: Response) => {
     try { 
