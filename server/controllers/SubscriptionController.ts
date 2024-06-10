@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb";
 import { connectToDatabase } from "../config/db";
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { SubscriptionLevel } from "../models/SubscriptionModel";
 
 interface User {
@@ -33,20 +33,19 @@ export const createSubscription = async (req: Request, res: Response) => {
     const { subscriptionLevel } = req.body;
     let email = (req.session as Session).user?.email
 
+    console.log(req.session, (req.session as Session).user);
     try {
     const db = await connectToDatabase();
     const user = db.collection("user");
     const collection = db.collection("subscriptions");
     const userExists = await collection.findOne({ "email": email });
-    
-    // TODOJLo find user email instead of null
 
     if (userExists && userExists.subscriptionLevel === subscriptionLevel) {
         return res.status(409).send("Already subscribed");
 
     } else if (userExists && userExists.subscriptionLevel !== subscriptionLevel) {
         const result = await collection.updateOne({"email": email}, {$set: {"subscriptionLevel": subscriptionLevel, "startDate": new Date()}});
-        return res.status(201).send("Subscription updated");
+        return res.status(201).json({"message": "Subscription updated"});
         
     } else {
         const result = await collection.insertOne({
@@ -65,17 +64,16 @@ export const createSubscription = async (req: Request, res: Response) => {
     };
 
 
-    export const pauseSubscription = async (req: Request, res: Response) => {
+     export const pauseSubscription = async (req: Request, res: Response) => {
         try {
         const db = await connectToDatabase();
         const { id } = req.params;
-        // TODO Jlo: get user or id from session
-        const subscriptionLevel = "noob";
+
         await db.collection('subscriptions').updateOne({ _id: new ObjectId(id) }, { $set: { subscriptionLevel: "noob" } });
-        // TODO JLo: check date 
+        // TODOJLo: check date 
         
         res.send("Subscription paused");
-                
+        
         } catch (error) {
             console.error("Error pausing subscription:", error);
             res.status(500).send("Error pausing subscription");
@@ -83,21 +81,26 @@ export const createSubscription = async (req: Request, res: Response) => {
     };
 
 
-export const getArticles = async (req: Request, res: Response) => {
-    try { 
-      const db = await connectToDatabase();
-      let email = (req.session as Session).user?.email;
-      
+/* export const getArticles = async (req: Request, res: Response, next: NextFunction) => {
+    const db = await connectToDatabase();
+    const email = req.headers['email'] as string;
+    // TODO JLo: get user or id from session
 
+    const user = await db.collection('user').findOne({ email });
 
-      // TODO JLo: get articles sub lvl 
+    if(!user) {
+        return res.status(404).send('User not found');
+    }
+
+    const articles = await db.collection('articles').find({}).toArray();
+    res.json(articles);
+
+    if (user.subscriptionLevel !== articles.subscriptionLevel) {
+
+    }
+  };
+ */
+    // TODO JLo: get articles sub lvl 
       // hämta user sub lvl
       // filtrera artiklar baserat på user sub lvl
       // lte > less than or equal
-
-      const articles = await db.collection('articles').find({}).toArray();
-      res.json(articles);
-    } catch (error) {
-      res.status(500).send('Error getting articles');
-    }
-  };
