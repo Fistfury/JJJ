@@ -19,7 +19,7 @@ return (
             <div className="mb-4">
             <label className="block text-lg font-medium text-gray-700">Välj prenumerationsnivå:</label>
             <select {...register('subscriptionLevel', { required: true })} className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-            <option value="DevBasics">DevBasics</option>
+            <option value="DevBasic">DevBasic</option>
             <option value="DevPlus">DevPlus</option>
             <option value="DevDominator">DevDominator</option>
             </select>

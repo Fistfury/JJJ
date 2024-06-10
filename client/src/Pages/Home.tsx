@@ -23,6 +23,7 @@ export const Home: React.FC = () => {
         headers: {
           'Content-Type': 'application/json'
         },
+        credentials: 'include',
         body: JSON.stringify(data)
       });
 
@@ -93,11 +94,12 @@ export const Home: React.FC = () => {
 
   const handleSubscribe = async (data: SubscribeFormData) => {
     try {
-      const response = await fetch('http://localhost:3000/api/subscription/create', {
+      const response = await fetch('http://localhost:3000/api/subscriptions/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
+        credentials: 'include',
         body: JSON.stringify(data)
       });
       if (response.ok) {
@@ -127,6 +129,7 @@ export const Home: React.FC = () => {
           className="mt-8 mb-20 p-20 glass rounded-xl shadow-lg grid grid-cols-3 gap-9"
           style={{ width: "660px" }}
         >
+
           <div className="flex flex-col items-center cursor-pointer transform transition-transform duration-300 hover:scale-105" onClick={() => setIsLoginOpen(true)}>
             <div className="p-4 bg-opacity-50 bg-gray-900 rounded-full">
               <i className="fas fa-robot text-4xl"></i>
@@ -175,6 +178,7 @@ export const Home: React.FC = () => {
           <i className="fab fa-twitter text-2xl"></i>
         </a>
       </div>
+
     </div>
 
     {isLoginOpen && (
