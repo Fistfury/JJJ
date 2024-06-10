@@ -33,7 +33,6 @@ export const createSubscription = async (req: Request, res: Response) => {
     const { subscriptionLevel } = req.body;
     let email = (req.session as Session).user?.email
 
-    console.log(req.session, (req.session as Session).user);
     try {
     const db = await connectToDatabase();
     const user = db.collection("user");
@@ -41,7 +40,7 @@ export const createSubscription = async (req: Request, res: Response) => {
     const userExists = await collection.findOne({ "email": email });
 
     if (userExists && userExists.subscriptionLevel === subscriptionLevel) {
-        return res.status(409).send("Already subscribed");
+        return res.status(409).json("Already subscribed");
 
     } else if (userExists && userExists.subscriptionLevel !== subscriptionLevel) {
         const result = await collection.updateOne({"email": email}, {$set: {"subscriptionLevel": subscriptionLevel, "startDate": new Date()}});
@@ -63,7 +62,7 @@ export const createSubscription = async (req: Request, res: Response) => {
     }
     };
 
-
+    
      export const pauseSubscription = async (req: Request, res: Response) => {
         try {
         const db = await connectToDatabase();

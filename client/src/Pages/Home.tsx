@@ -8,6 +8,7 @@ import Subscribe from '../Modals/Subscribe';
 import { SubscribeFormData } from '../Interfaces/SubscribeFormData';
 import logo from '../assets/logo-14.png';
 import { motion } from 'framer-motion';
+import Articles from '../Components/Articles';
 
 export const Home: React.FC = () => {
   const { setIsAuthenticated } = useAuth();
@@ -178,6 +179,8 @@ export const Home: React.FC = () => {
           <i className="fab fa-twitter text-2xl"></i>
         </a>
       </div>
+
+      <Articles />
 
     </div>
 
