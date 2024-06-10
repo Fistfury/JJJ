@@ -65,6 +65,7 @@ const login = async (req: Request, res: Response): Promise<void> => {
             return;
         }
 
+        console.log(userExists);
         (req.session as Session).user = userExists;
         res.status(200).json(userExists.email);
     } catch (error) {

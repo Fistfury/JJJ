@@ -1,5 +1,5 @@
 export interface SubscribeFormData {
-    //email: string;
+    email: string;
     subscriptionLevel: string;
     //stripeCustomerId: string;
 }
