@@ -9,6 +9,7 @@ import {Account} from '../Pages/Account';
 import {CustomerLoginWrapper} from '../Contexts/CustomerLoginWrapper';
 import { useAuth } from '../Contexts/AuthContext';
 import { CustomerRegisterWrapper } from '../Contexts/CustomerRegisterWrapper';
+import Articles from "../Components/Articles";
 
 
 export const RouterWrapper = () => {
@@ -27,6 +28,7 @@ export const RouterWrapper = () => {
         { path: '/subscription-test', element: <SubscriptionTest />},
         { path: '/payment-success', element: <PaymentSuccess /> },
         { path: '/payment-failed', element: <PaymentFailed /> },
+        { path: '/articles', element: <Articles /> },
       ],
     },
   ]);
