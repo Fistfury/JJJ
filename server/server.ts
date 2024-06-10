@@ -18,22 +18,23 @@ const PORT = process.env.PORT || 3000;
 
 app.use(logger);
 app.use(cors({origin: 'http://localhost:5173', credentials: true}));
-app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+app.post('/webhook', bodyParser.raw({type: 'application/json'}), handleStripeWebhook);
+
+app.use(express.json());
 app.use(sessionMiddleware);
 
 
 app.use('/api/auth', AuthRoutes);
 app.use('/api/articles', ArticleRoutes);
+app.use('/api/subscriptions', SubscriptionRoutes);
+app.use('/api/payments', PaymentRoutes);
+app.use('/api/stripe', StripeRoutes);
 
 app.get('/', (req, res) => {
   res.send('Hello World');
 });
-
-app.use('/api/subscriptions', SubscriptionRoutes);
-app.use('/api/payments', PaymentRoutes);
-app.use('/api/stripe', StripeRoutes);
-app.post('/webhook', express.raw({type: 'application/json'}), handleStripeWebhook);
 
 app.get('/test-db', async (req, res) => {
   try {
