@@ -20,9 +20,9 @@ export const SubscriptionTest = () => {
     };
 
     return (
-        <div className="subscription-test">
+        <div className="subscription-test mt-32">
             <h1>Testa Prenumerationer</h1>
-            <button onClick={() => handleSubscription('price_1PObUYRtRCaZXyExUhlbRhJm')}>Prenumerera på Dev Basics</button>
+            <button  onClick={() => handleSubscription('price_1PObUYRtRCaZXyExUhlbRhJm')}>Prenumerera på Dev Basics</button>
             <button onClick={() => handleSubscription('price_1PObVURtRCaZXyExHWQoyoRS')}>Prenumerera på Dev Plus</button>
             <button onClick={() => handleSubscription('price_1POcLfRtRCaZXyExsq693pIp')}>Prenumerera på Dev Dominator</button>
         </div>
