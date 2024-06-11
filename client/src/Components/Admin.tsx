@@ -78,10 +78,10 @@ export const Admin: React.FC = () => {
 
   const editArticle = (index: number) => {
     const article = articles[index];
-    /* setValue('_id', article._id) */
     setValue('title', article.title);
     setValue('content', article.content);
     setValue('subscriptionLevel', article.subscriptionLevel);
+    setValue('imageUrl', article.imageUrl);
     setEditIndex(index);
   };
 
