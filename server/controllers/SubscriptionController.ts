@@ -66,39 +66,52 @@ export const createSubscription = async (req: Request, res: Response) => {
     }
     };
 
+    export const updateSubscription = async (req: Request, res: Response) => {
+        const { subscriptionLevel } = req.body;
+        let email = (req.session as Session).user?.email
     
-     export const pauseSubscription = async (req: Request, res: Response) => {
-         const db = await connectToDatabase();
-        /*const email = (req.session as Session).user;
-        const subscription = await db.collection('subscriptions').findOne({ "email": email });
-        const _id = subscription?._id; */
-
-        //const { _id } = req.body;
-        const email = (req.session as Session).user?.email;
-        if (!email) {
-            return res.status(400).json ({ error: 'Email not found' });
-        }
         try {
-        const subscription = await db.collection('subscriptions').findOne({ "email": email});
-        if (!subscription || !subscription._id) {
-            return res.status(404).json({ error: 'Subscription not found' });
-        }
-        const _id = new ObjectId(subscription._id);
-        console.log("id:", _id)
-        console.log("email:", email)
-
-        //const result = await db.collection('subscriptions').updateOne({_id}, {$set: {"subscriptionLevel": "noob"}});
-        //const pausedSubscription = await db.collection('subscriptions').findOne({email, subscriptionLevel });
-        // TODOJLo: check date 
-        //const pausedSubscription = await db.collection('subscriptions').findOne({_id});
-
-        res.json("Subscription paused");
+        const db = await connectToDatabase();
+        const user = db.collection("user");
+        const collection = db.collection("subscriptions");
+        const userExists = await collection.findOne({ "email": email });
     
+        if (userExists && userExists.subscriptionLevel === subscriptionLevel) {
+            return res.status(409).json("Already subscribed");
+    
+        } else if (userExists && userExists.subscriptionLevel !== subscriptionLevel) {
+            const result = await collection.updateOne({"email": email}, {$set: {"subscriptionLevel": subscriptionLevel, "startDate": new Date()}});
+            return res.status(201).json({"message": "Subscription updated"});
+            
+        } 
+        } catch (error) {
+            console.error("Error creating subscription:", error);
+            res.status(500).send("Error creating subscription");
+        }
+        };
+
+    
+    export const pauseSubscription = async (req: Request, res: Response) => {
+        try {
+        const db = await connectToDatabase();
+        const email = (req.session as Session).user?.email;
+        console.log(email);
+
+        const subscription = await db.collection('subscriptions').findOne({ "email": email });
+        const _id = subscription?._id;
+        console.log("_id:", _id);
+
+        await db.collection('subscriptions').updateOne({ _id: new ObjectId(_id) }, { $set: { subscriptionLevel: "noob" } });
+        // TODO JLo: check date 
+        
+        res.json("Subscription paused");
+                
         } catch (error) {
             console.error("Error pausing subscription:", error);
-            res.status(500).json("Error pausing subscription");
+            res.status(500).send("Error pausing subscription");
         }
     };
+	
 
 
 /* export const getArticles = async (req: Request, res: Response, next: NextFunction) => {

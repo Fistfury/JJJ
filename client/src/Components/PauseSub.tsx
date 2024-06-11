@@ -1,18 +1,14 @@
-import React from 'react'
 import { useParams } from 'react-router-dom';
 
 const PauseSub = () => {
-    const _id = useParams()._id;
+    const { _id } = useParams();
+    const data = {isPaused: true}
 
-    const data = { isPaused: true };
     const handlePause = async () => {
-        try {
+        if (window.confirm('Are you sure you want to pause your subscription?')) {
         const response = await fetch(`http://localhost:3000/api/subscriptions/${_id}`, {
             method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                
-            },
+            credentials: 'include',
             body: JSON.stringify(data),
     });
 
@@ -23,8 +19,6 @@ const PauseSub = () => {
         console.error('Error:', response.statusText);
 
     }
-} catch (error) {
-    console.error('Error:', error);
 }}
 
   return (
