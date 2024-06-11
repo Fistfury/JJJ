@@ -20,19 +20,21 @@ const Articles = () => {
     fetchArticles();
 }, [])
 
-  return (
-    <div>
-        <ul>
-            {articles.map((article) => (
-                <li key={article._id}>
-                    <img src={article.imageUrl} alt={article.title} />
-                    <h2>{article.title}</h2>
-                    <p>{article.content}</p>
-                </li>
-            ))}
+    return (
+      <div className="mt-8 mb-20 p-20 glass rounded-xl shadow-lg grid grid-cols-1 gap-9">
+        <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {articles.map((article: { _id: string, imageUrl: string, title: string, content: string }) => (
+            <li key={article._id} className="card glass shadow-md p-4 rounded-lg">
+              <img src={article.imageUrl} alt={article.title} className="rounded-t-lg" />
+              <div className="p-4">
+                <h2 className="text-xl font-bold">{article.title}</h2>
+                <p className="mt-2">{article.content}</p>
+              </div>
+            </li>
+          ))}
         </ul>
-    </div>
-  )
+      </div>
+    )
 }
 
 export default Articles
