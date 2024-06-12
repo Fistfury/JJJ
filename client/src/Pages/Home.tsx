@@ -169,22 +169,11 @@ export const Home: React.FC = () => {
             <p className="mt-2">IoT</p>
           </div>
         </motion.div>
-      <div className="mt-12 flex space-x-4">
-        <a href="https://www.instagram.com" target="_blank" rel="#">
-          <i className="fab fa-instagram text-2xl"></i>
-        </a>
-        <a href="https://www.facebook.com" target="_blank" rel="#">
-          <i className="fab fa-facebook text-2xl"></i>
-        </a>
-        <a href="https://www.twitter.com" target="_blank" rel="#">
-          <i className="fab fa-twitter text-2xl"></i>
-        </a>
-      </div>
       
       { isAuthenticated && <Articles />}
 
-    </div>
 
+    </div>
     {isLoginOpen && (
       <CustomerLogin
         isOpen={isLoginOpen}

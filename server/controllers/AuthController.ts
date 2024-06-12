@@ -8,6 +8,7 @@ interface User {
     email: string;
     password: string;
     stripeCustomerId: string;
+    _id?: string;
 }
 
 interface Admin {
@@ -19,6 +20,29 @@ interface Session {
     user? : User;
     admin? : Admin;
 }
+
+export const getUserDetails = async (req: Request, res: Response) => {
+    try {
+     
+      const session = req.session as Session;
+      if (!session || !session.user) {
+        return res.status(401).json({ error: 'Unauthorized' });
+      }
+  
+      const userId = session.user._id;
+      const usersCollection = await getCollection<User>('users');
+      const user = await usersCollection.findOne({ _id: userId });
+  
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+  
+      res.json(user);
+    } catch (error) {
+      console.error('Error fetching user details:', error);
+      res.status(500).json({ error: 'Failed to retrieve user details' });
+    }
+  };
 
 const register = async (req: Request, res: Response): Promise<void> => {
     const { email, password } = req.body;
