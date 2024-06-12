@@ -6,10 +6,20 @@ export const Admin: React.FC = () => {
   const { register, handleSubmit, reset, setValue } = useForm<ArticleFormData>();
   const [articles, setArticles] = useState<ArticleFormData[]>([]);
   const [editIndex, setEditIndex] = useState<number | null>(null);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   useEffect(() => {
     fetchArticles();
   }, []);
+
+  useEffect(() => {
+    if (toastMessage) {
+      const timer = setTimeout(() => {
+        setToastMessage(null);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [toastMessage]);
 
   const fetchArticles = async () => {
     try {
@@ -36,6 +46,7 @@ export const Admin: React.FC = () => {
           },
           body: JSON.stringify(data),
         });
+        setToastMessage('Article updated successfully!');
       } else {
         const response = await fetch('http://localhost:3000/api/articles', {
           method: 'POST',
@@ -46,13 +57,15 @@ export const Admin: React.FC = () => {
         });
         const newArticle = await response.json();
         setArticles([...articles, newArticle]);
+        setToastMessage('Article added successfully!');
       }
       reset();
     } catch (error) {
       console.error('Error submitting article:', error);
+      setToastMessage('Error submitting article. Please try again.');
     }
   };
-  
+
   const removeArticle = async (index: number) => {
     if (window.confirm('Are you sure you want to delete this article?')) {
       const articleId = articles[index]._id;
@@ -69,12 +82,13 @@ export const Admin: React.FC = () => {
         await fetch(`http://localhost:3000/api/articles/${articleId}`, {
           method: 'DELETE',
         });
+        setToastMessage('Article deleted successfully!');
       } catch (error) {
         console.error('Error deleting article:', error);
+        setToastMessage('Error deleting article. Please try again.');
       }
     }
   };
-  
 
   const editArticle = (index: number) => {
     const article = articles[index];
@@ -89,7 +103,6 @@ export const Admin: React.FC = () => {
     <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md mt-10">
       <h1 className="text-3xl font-bold mb-6 text-center">Admin Panel</h1>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        
         <div>
           <label className="block text-lg font-medium text-gray-700">Article Title</label>
           <input
@@ -163,6 +176,15 @@ export const Admin: React.FC = () => {
           </li>
         ))}
       </ul>
+      {toastMessage && (
+        <div className="toast toast-end toast-middle">
+          <div className="alert alert-success text-white">
+            <div>
+              <span>{toastMessage}</span>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
