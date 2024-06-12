@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import PauseSub from "../Components/PauseSub"
 
 export const Account = () => {
+
     const [subscription, setSubscription] = useState([]);
         const fetchSubscription = async () => {
             try {
