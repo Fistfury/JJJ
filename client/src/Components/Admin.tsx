@@ -67,17 +67,21 @@ export const Admin: React.FC = () => {
   };
 
   const removeArticle = async (index: number) => {
+    const articleId = articles[index]._id;
+    console.log('Attempting to delete article with ID:', articleId);
+  
+    if (!articleId) {
+      console.error('Article ID is undefined');
+      return;
+    }
+  
     if (window.confirm('Are you sure you want to delete this article?')) {
-      const articleId = articles[index]._id;
-      if (!articleId) {
-        console.error('Article ID is undefined');
-        return;
-      }
       setArticles(articles.filter((_, i) => i !== index));
       if (editIndex === index) {
         reset();
         setEditIndex(null);
       }
+  
       try {
         await fetch(`http://localhost:3000/api/articles/${articleId}`, {
           method: 'DELETE',
@@ -89,6 +93,7 @@ export const Admin: React.FC = () => {
       }
     }
   };
+  
 
   const editArticle = (index: number) => {
     const article = articles[index];
@@ -96,7 +101,9 @@ export const Admin: React.FC = () => {
     setValue('content', article.content);
     setValue('subscriptionLevel', article.subscriptionLevel);
     setValue('imageUrl', article.imageUrl);
+    setValue('category', article.category);
     setEditIndex(index);
+    console.log('Editing article with ID:', article._id);
   };
 
   return (
@@ -137,6 +144,18 @@ export const Admin: React.FC = () => {
             <option value="DevBasics">DevBasics</option>
             <option value="DevPlus">DevPlus</option>
             <option value="DevDominator">DevDominator</option>
+          </select>
+          <label className="block text-lg font-medium text-gray-700">Category</label>
+          <select
+            {...register('category', { required: true })}
+            className="mt-1 p-2 w-full border border-gray-300 rounded-md"
+          >
+            <option value="AI">AI</option>
+            <option value="Cybersecurity">Cybersecurity</option>
+            <option value="Blockchain">Blockchain</option>
+            <option value="Cloud Computing">Cloud Computing</option>
+            <option value="Tech Industri">Tech Industri</option>
+            <option value="IoT">IoT</option>
           </select>
         </div>
         <button

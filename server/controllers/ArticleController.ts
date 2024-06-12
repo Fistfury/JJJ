@@ -35,6 +35,7 @@ export const updateArticle = async (req: Request, res: Response) => {
     const db: Db = await connectToDatabase();
     const { id } = req.params;
     const article: Partial<Article> = req.body;
+    console.log('Updating article with ID:', id, 'with data:', article);
     await db.collection('articles').updateOne({ _id: new ObjectId(id) }, { $set: article });
     res.send('Article updated');
   } catch (error) {
