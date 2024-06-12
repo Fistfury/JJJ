@@ -2,93 +2,122 @@ import { Request, Response } from 'express';
 import { stripe } from '../config/stripe';
 import { connectToDatabase } from '../config/db';
 import Stripe from 'stripe';
+import { Db } from 'mongodb';
 
-export async function handleStripeWebhook(req: Request, res: Response) {
-    const sig = req.headers['stripe-signature'] as string;
-    const buf = req.body;
-
-    console.log('Received webhook event:', buf.toString());
-
-    try {
-        const event = stripe.webhooks.constructEvent(buf, sig, process.env.STRIPE_WEBHOOK_SECRET as string);
-        console.log('Constructed event:', event);
-        const db = await connectToDatabase();
-
-        switch (event.type) {
-            case 'invoice.payment_succeeded': {
-                const invoice = event.data.object as Stripe.Invoice;
-                const paymentIntentId = invoice.payment_intent as string;
-                const customerId = invoice.customer as string;
-                const subscriptionId = invoice.subscription as string;
-                console.log(`Payment succeeded with payment intent: ${paymentIntentId}`);
-
-                const insertResult = await db.collection('payments').insertOne({
-                    paymentIntentId: paymentIntentId,
-                    status: 'succeeded',
-                    customerId: customerId,
-                    amount: invoice.amount_paid,
-                    currency: invoice.currency,
-                    createdAt: new Date(invoice.created * 1000),
-                });
-                console.log('Insert result:', insertResult);
-
-                const subscriptionUpdateResult = await db.collection('subscriptions').updateOne(
-                    { subscriptionId: subscriptionId },
-                    { $set: { status: 'active' } }
-                );
-                console.log('Subscription update result:', subscriptionUpdateResult);
-                break;
-            }
-            case 'invoice.payment_failed': {
-                const invoice = event.data.object as Stripe.Invoice;
-                const failedPaymentIntentId = invoice.payment_intent as string;
-                const failedCustomerId = invoice.customer as string;
-                const subscriptionId = invoice.subscription as string;
-                console.log(`Payment failed for intent: ${failedPaymentIntentId}`);
-
-                const failedInsertResult = await db.collection('payments').insertOne({
-                    paymentIntentId: failedPaymentIntentId,
-                    status: 'failed',
-                    customerId: failedCustomerId,
-                    amount: invoice.amount_due,
-                    currency: invoice.currency,
-                    createdAt: new Date(invoice.created * 1000),
-                });
-                console.log('Failed insert result:', failedInsertResult);
-
-                const subscriptionUpdateResult = await db.collection('subscriptions').updateOne(
-                    { subscriptionId: subscriptionId },
-                    { $set: { status: 'past_due' } }
-                );
-                console.log('Subscription update result:', subscriptionUpdateResult);
-                break;
-            }
-            case 'customer.subscription.created': {
-                const subscription = event.data.object as Stripe.Subscription;
-                const subscriptionLevel = subscription.metadata.subscriptionLevel;
-                console.log(`New subscription created: ${subscription.id}, Level: ${subscriptionLevel}`);
-
-                const subscriptionInsertResult = await db.collection('subscriptions').insertOne({
-                    subscriptionId: subscription.id,
-                    customerId: subscription.customer as string,
-                    subscriptionLevel: subscriptionLevel,
-                    status: subscription.status,
-                    createdAt: new Date(subscription.created * 1000),
-                });
-                console.log('Subscription insert result:', subscriptionInsertResult);
-                break;
-            }
-            default:
-                console.log(`Unhandled event type ${event.type}`);
-        }
-
-        res.json({ received: true });
-    } catch (err) {
-        console.error('Error in webhook handling:', err);
-        if (err instanceof Error) {
-            res.status(400).send(`Webhook Error: ${err.message}`);
-        } else {
-            res.status(400).send("Webhook Error: Unknown error");
-        }
-    }
+interface PaymentRecord {
+  paymentIntentId: string;
+  status: string;
+  customerId: string;
+  amount: number;
+  currency: string;
+  createdAt: Date;
+  retryUrl?: string | null;
 }
+
+export const handleStripeWebhook = async (req: Request, res: Response) => {
+  const sig = req.headers['stripe-signature'] as string;
+  const buf = req.body;
+
+  try {
+    const event = stripe.webhooks.constructEvent(buf, sig, process.env.STRIPE_WEBHOOK_SECRET as string);
+    const db = await connectToDatabase();
+
+    console.log(`Received event: ${event.type}`);
+
+    switch (event.type) {
+      case 'invoice.payment_succeeded':
+      case 'invoice.payment_failed':
+        await handleInvoiceEvents(event, db);
+        break;
+    case 'checkout.session.completed':
+        await handleSubscriptionEvents(event, db);
+        break;
+      case 'customer.subscription.created':
+      case 'customer.subscription.updated':
+      case 'customer.subscription.deleted':
+        await handleSubscriptionEvents(event, db);
+        break;
+      default:
+        console.log(`Unhandled event type ${event.type}`);
+    }
+
+    res.json({ received: true });
+  } catch (err: any) {
+    console.error('Error in webhook handling:', err);
+    res.status(400).send(`Webhook Error: ${err.message}`);
+  }
+};
+
+const handleInvoiceEvents = async (event: Stripe.Event, db: Db) => {
+  const invoice = event.data.object as Stripe.Invoice;
+  const status = event.type === 'invoice.payment_succeeded' ? 'succeeded' : 'failed';
+
+  console.log(`Handling invoice event: ${event.type}`);
+
+  const paymentRecord: PaymentRecord = {
+    paymentIntentId: invoice.payment_intent as string,
+    status: status,
+    customerId: invoice.customer as string,
+    amount: status === 'succeeded' ? invoice.amount_paid : invoice.amount_due,
+    currency: invoice.currency,
+    createdAt: new Date(invoice.created * 1000),
+  };
+
+  if (status === 'failed' && invoice.hosted_invoice_url) {
+    paymentRecord.retryUrl = invoice.hosted_invoice_url;
+  }
+
+  await db.collection('payments').insertOne(paymentRecord);
+
+  if (invoice.subscription) {
+    const subscriptionStatus = status === 'succeeded' ? 'active' : 'past_due';
+    const updateResult = await db.collection('subscriptions').updateOne(
+      { subscriptionId: invoice.subscription as string },
+      { $set: { status: subscriptionStatus } }
+    );
+    console.log(`Updated subscription status: ${subscriptionStatus}, Update result: ${JSON.stringify(updateResult)}`);
+  }
+};
+
+const handleSubscriptionEvents = async (event: Stripe.Event, db: Db) => {
+    if (event.type === 'checkout.session.completed' && 'metadata' in event.data.object) {
+        const session = event.data.object as Stripe.Checkout.Session;
+      
+        console.log(`Handling checkout session completed event: ${event.type}`);
+      
+        // Check if metadata and customer are not null or undefined
+        if (session.metadata && session.customer && typeof session.customer === 'string') {
+            const subscriptionLevel = session.metadata.subscriptionLevel;
+            console.log(`subscriptionLevel: ${subscriptionLevel}`);
+          
+            // Retrieve customer details from Stripe
+            const customerDetails = await stripe.customers.retrieve(session.customer) as Stripe.Customer;
+            const email = customerDetails.email;
+      
+          // Check if a user exists with the given stripeCustomerId
+          const user = await db.collection('user').findOne({ stripeCustomerId: session.customer });
+          if (!user) {
+            console.error(`No user found with customerId: ${session.customer}`);
+            return;
+          }
+      
+          // Check if subscription is not null or undefined
+          if (session.subscription) {
+            // Update the subscription record
+            const updateResult = await db.collection('subscriptions').updateOne(
+              { subscriptionId: session.subscription },
+              {
+                $set: {
+                  customerId: session.customer,
+                  subscriptionLevel: subscriptionLevel,
+                  status: 'active',
+                  email: email,
+                  createdAt: new Date(),
+                },
+              },
+              { upsert: true }
+            );
+          }
+        }
+      }
+    }

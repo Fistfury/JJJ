@@ -9,6 +9,7 @@ import ArticleRoutes from './routes/ArticleRoutes';
 import { connectToDatabase } from './config/db';
 import PaymentRoutes from './routes/PaymentRoutes';
 import StripeRoutes from './routes/StripeRoutes';
+import UserRoutes from './routes/UserRoutes';
 import { handleStripeWebhook } from './middleware/stripeWebhooks';
 import logger from './middleware/logger';
 import SubscriptionRoutes from './routes/SubscriptionRoutes';
@@ -31,6 +32,7 @@ app.use('/api/articles', ArticleRoutes);
 app.use('/api/subscriptions', SubscriptionRoutes);
 app.use('/api/payments', PaymentRoutes);
 app.use('/api/stripe', StripeRoutes);
+app.use('/api/user', UserRoutes);
 
 app.get('/', (req, res) => {
   res.send('Hello World');

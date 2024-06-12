@@ -2,11 +2,34 @@ import React from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { CustomerLoginFormData } from '../Interfaces/CustomerLoginFormData';
 import { CustomerLoginProps } from '../Interfaces/CustomerLoginProps';
+import { useUser } from '../Contexts/UserContext';
 
 export const CustomerLogin: React.FC<CustomerLoginProps> = ({ isOpen, onClose, onLogin, onRegister }) => {
   const { register, handleSubmit } = useForm<CustomerLoginFormData>();
+  const { setUser} = useUser();
 
-  const onSubmit: SubmitHandler<CustomerLoginFormData> = (data) => {
+  const onSubmit: SubmitHandler<CustomerLoginFormData> = async (data) => {
+    try {
+      // Replace this with your actual API call
+      const response = await fetch('http://localhost:3000/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+  
+      if (!response.ok) {
+        throw new Error('Login failed');
+      }
+  
+      const userData = await response.json();
+      console.log('User data:', userData);
+  
+      setUser(userData);
+    } catch (error) {
+      console.error(error);
+    }
     onLogin(data);
   };
 

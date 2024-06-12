@@ -5,9 +5,11 @@ import { CustomerLoginFormData } from '../Interfaces/CustomerLoginFormData';
 import { CustomerRegisterFormData } from '../Interfaces/CustomerRegisterFormData';
 import { useAuth } from '../Contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { useUser } from './UserContext';
 
 export const CustomerLoginWrapper: React.FC = () => {
     const { setIsAuthenticated } = useAuth();
+    const { setUser } = useUser();
     const [isLoginOpen, setIsLoginOpen] = useState(true);
     const [isRegisterOpen, setIsRegisterOpen] = useState(false);
     const navigate = useNavigate();
@@ -27,6 +29,7 @@ export const CustomerLoginWrapper: React.FC = () => {
         if (response.ok) {
           const result = await response.json();
           console.log('Login data:', result);
+          setUser(result);
           setIsAuthenticated(true);
           setIsLoginOpen(false);
           navigate('/'); 

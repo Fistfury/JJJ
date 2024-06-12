@@ -91,8 +91,8 @@ const login = async (req: Request, res: Response): Promise<void> => {
 
         console.log(userExists);
         (req.session as Session).user = userExists;
-        res.status(200).json(userExists.email);
-    } catch (error) {
+        res.status(200).json({ email: userExists.email, stripeCustomerId: userExists.stripeCustomerId });
+      } catch (error) {
         console.error(error);
         res.status(500).json('Serverfel');
     }

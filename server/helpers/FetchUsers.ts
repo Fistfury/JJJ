@@ -12,4 +12,9 @@ const fetchUsers = async (): Promise<User[]> => {
     return usersCollection.find().toArray();
 };
 
+export const fetchUserByEmail = async (email: string): Promise<User | null> => {
+    const usersCollection: Collection<User> = await getCollection<User>('user');
+    return usersCollection.findOne({ email });
+  };
+
 export default fetchUsers;

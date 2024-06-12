@@ -5,12 +5,15 @@ import { AuthProvider } from './Contexts/AuthContext';
 import './index.css';
 import './Styles/style.css'
 import '@fortawesome/fontawesome-free/css/all.min.css';
+import { UserProvider } from './Contexts/UserContext';
 
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <AuthProvider>
-      <RouterWrapper />
+      <UserProvider>
+        <RouterWrapper />
+      </UserProvider>
     </AuthProvider>
   </React.StrictMode>,
 );

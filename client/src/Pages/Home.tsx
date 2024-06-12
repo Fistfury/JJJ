@@ -9,6 +9,7 @@ import { SubscribeFormData } from '../Interfaces/SubscribeFormData';
 import logo from '../assets/logo-14.png';
 import { motion } from 'framer-motion';
 import Articles from '../Components/Articles';
+import { PaymentUpdateModal } from '../Modals/PaymentUpdate';
 
 export const Home: React.FC = () => {
   const { setIsAuthenticated } = useAuth();
@@ -116,6 +117,7 @@ export const Home: React.FC = () => {
   }
 
   return (
+    
     <div className="min-h-screen bg-cover bg-center">
     <div className="flex flex-col items-center justify-center h-full text-white bg-opacity-50 bg-black">
     <div className="flex items-center mt-32">
@@ -123,6 +125,8 @@ export const Home: React.FC = () => {
             
           </div>
       <p className=" text-lg">CHOOSE A CATEGORY</p>
+      <PaymentUpdateModal updateUrl="https://billing.stripe.com/p/subscription/update_payment_method_link/CBcaFwoVYWNjdF8xUDFURU9SdFJDYVpYeUV4KJawp7MGMgbxUAHWDDA6OtajftwlKw6z_4w0BLG-e8faTeDuO6shxnQbbFXtFfwTsXkUrQUACtIkHKqim82LScK9MOzVGtSI4_g" />
+
       <motion.div
           initial={{ x: '-100vw' }}
           animate={{ x: 0 }}

@@ -1,7 +1,8 @@
 export interface SubscribeFormData {
+    priceId: string;
     email: string;
     subscriptionLevel: string;
-    //stripeCustomerId: string;
+    stripeCustomerId: string;
 }
 
 export interface SubscribeFormProps {

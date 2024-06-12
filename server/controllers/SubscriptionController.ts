@@ -2,6 +2,7 @@ import { ObjectId } from "mongodb";
 import { connectToDatabase } from "../config/db";
 import { NextFunction, Request, Response } from "express";
 import { SubscriptionLevel } from "../models/SubscriptionModel";
+import { stripe } from "../config/stripe";
 
 interface User {
     email: string;
@@ -34,37 +35,47 @@ export const getSubscriptionLevels = async (req: Request, res: Response) => {
 };
 
 export const createSubscription = async (req: Request, res: Response) => {
-    const { subscriptionLevel } = req.body;
+    console.log(req.body);
+    const { subscriptionLevel, stripeCustomerId, paymentIntentId } = req.body;
+    if (!stripeCustomerId) {
+        return res.status(400).json({ error: 'Stripe customer ID is required' });
+      }
+    console.log(stripeCustomerId, paymentIntentId, subscriptionLevel);
     let email = (req.session as Session).user?.email
-
+  
     try {
-    const db = await connectToDatabase();
-    const user = db.collection("user");
-    const collection = db.collection("subscriptions");
-    const userExists = await collection.findOne({ "email": email });
+      const db = await connectToDatabase();
+      const user = db.collection("user");
+      const collection = db.collection("subscriptions");
+      const userExists = await collection.findOne({ "email": email });
 
-    if (userExists && userExists.subscriptionLevel === subscriptionLevel) {
+      const customer = await stripe.customers.retrieve(stripeCustomerId);
+      console.log(customer);
+    //   const subscriptionLevel = customer.metadata.subscriptionLevel;
+  
+      if (userExists && userExists.subscriptionLevel === subscriptionLevel) {
         return res.status(409).json("Already subscribed");
-
-    } else if (userExists && userExists.subscriptionLevel !== subscriptionLevel) {
-        const result = await collection.updateOne({"email": email}, {$set: {"subscriptionLevel": subscriptionLevel, "startDate": new Date()}});
-        return res.status(201).json({"message": "Subscription updated"});
+  
+      } else if (userExists && userExists.subscriptionLevel !== subscriptionLevel) {
+        const result = await collection.updateOne({"email": email}, {$set: {"subscriptionLevel": subscriptionLevel, "startDate": new Date(), "status": "active", "stripeCustomerId": stripeCustomerId, "paymentId": paymentIntentId}});        return res.status(201).json({"message": "Subscription updated"});
         
-    } else {
+      } else {
         const result = await collection.insertOne({
-            "email": email, 
-            "subscriptionLevel": subscriptionLevel, 
-            "startDate": new Date(),
-            "stripeCustomerId": null,
-            "paymentId": null});
+          "email": email, 
+          "subscriptionLevel": subscriptionLevel, 
+          "startDate": new Date(),
+          "stripeCustomerId": stripeCustomerId,
+          "paymentId": paymentIntentId,
+          "status": "active"
+        });
         const createdSubscription = await user.findOne({ email, subscriptionLevel });
         res.status(201).json(createdSubscription);
-    } 
+      } 
     } catch (error) {
-        console.error("Error creating subscription:", error);
-        res.status(500).send("Error creating subscription");
+      console.error("Error creating subscription:", error);
+      res.status(500).send("Error creating subscription");
     }
-    };
+  };
 
     export const updateSubscription = async (req: Request, res: Response) => {
         const { subscriptionLevel } = req.body;
@@ -111,7 +122,26 @@ export const createSubscription = async (req: Request, res: Response) => {
             res.status(500).send("Error pausing subscription");
         }
     };
-	
+
+    export const getSubscriptionStatus = async (req: Request, res: Response) => {
+        const email = (req.session as Session).user?.email;
+        if (!email) {
+            return res.status(403).json({ error: 'Unauthorized' });
+        }
+    
+        try {
+            const db = await connectToDatabase();
+            const subscription = await db.collection('subscriptions').findOne({ email });
+            if (!subscription) {
+                return res.status(404).json({ error: 'Subscription not found' });
+            }
+            const updateUrl = 'https://billing.stripe.com/p/subscription/update_payment_method_link/CBcaFwoVYWNjdF8xUDFURU9SdFJDYVpYeUV4KJawp7MGMgbxUAHWDDA6OtajftwlKw6z_4w0BLG-e8faTeDuO6shxnQbbFXtFfwTsXkUrQUACtIkHKqim82LScK9MOzVGtSI4_g';  // Dynamiskt generera denna URL eller hämta från konfiguration
+            res.json({ status: subscription.status, updateUrl: updateUrl });
+        } catch (error) {
+            console.error("Error fetching subscription status:", error);
+            res.status(500).send("Error fetching subscription status");
+        }
+    };
 
 
 /* export const getArticles = async (req: Request, res: Response, next: NextFunction) => {
