@@ -11,7 +11,7 @@ import { motion } from 'framer-motion';
 import Articles from '../Components/Articles';
 
 export const Home: React.FC = () => {
-  const { setIsAuthenticated } = useAuth();
+  const { isAuthenticated, setIsAuthenticated } = useAuth();
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
   const [isSubscribeOpen, setIsSubscribeOpen] = useState(false);
@@ -115,6 +115,7 @@ export const Home: React.FC = () => {
     }
   }
 
+
   return (
     <div className="min-h-screen bg-cover bg-center">
     <div className="flex flex-col items-center justify-center h-full text-white bg-opacity-50 bg-black">
@@ -168,7 +169,10 @@ export const Home: React.FC = () => {
             <p className="mt-2">IoT</p>
           </div>
         </motion.div>
-      <Articles />
+      
+      { isAuthenticated && <Articles />}
+
+
     </div>
     {isLoginOpen && (
       <CustomerLogin

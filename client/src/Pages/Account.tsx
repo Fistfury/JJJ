@@ -4,8 +4,10 @@ import { motion } from "framer-motion";
 import { IUser } from "../Interfaces/IUser";
 
 export const Account = () => {
+
   const [subscription, setSubscription] = useState([]);
   const [user, setUser] = useState<IUser | null>(null);
+
 
   const fetchSubscription = async () => {
     try {

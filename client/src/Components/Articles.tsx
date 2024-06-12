@@ -6,7 +6,7 @@ const Articles = () => {
     useEffect(() => { 
         const fetchArticles = async () => {
         try {
-          const response = await fetch('http://localhost:3000/api/articles', {
+          const response = await fetch('http://localhost:3000/api/subscriptions/articles', {
             method: 'GET',
             credentials: 'include',
           });
