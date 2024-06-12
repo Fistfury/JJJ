@@ -1,6 +1,6 @@
 
 export enum SubscriptionLevel {
-    DevBasic = "DevBasic",
-    DevPlus = "DevPlus",
-    DevDominator = "DevDominator"
+    "Dev Basics" = 1,
+    "Dev Plus" = 2,
+    "Dev Dominator" = 3
 };

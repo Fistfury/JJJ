@@ -4,4 +4,5 @@ export interface Article {
     description: string;
     imageUrl: string;
     subscriptionLevel: string;
+    category: string;
 }

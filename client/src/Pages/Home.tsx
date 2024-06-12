@@ -12,7 +12,7 @@ import Articles from '../Components/Articles';
 import { PaymentUpdateModal } from '../Modals/PaymentUpdate';
 
 export const Home: React.FC = () => {
-  const { setIsAuthenticated } = useAuth();
+  const { isAuthenticated, setIsAuthenticated } = useAuth();
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
   const [isSubscribeOpen, setIsSubscribeOpen] = useState(false);
@@ -116,6 +116,15 @@ export const Home: React.FC = () => {
     }
   }
 
+  const handleCategoryClick = () => {
+    if (!isAuthenticated) {
+      setIsLoginOpen(true);
+    } else {
+      console.log('Test.... add logic to see content based on cat');
+    }
+  };
+
+
   return (
     
     <div className="min-h-screen bg-cover bg-center">
@@ -135,44 +144,47 @@ export const Home: React.FC = () => {
           style={{ width: "660px" }}
         >
 
-          <div className="flex flex-col items-center cursor-pointer transform transition-transform duration-300 hover:scale-105" onClick={() => setIsLoginOpen(true)}>
+          <div className="flex flex-col items-center cursor-pointer transform transition-transform duration-300 hover:scale-105" onClick={handleCategoryClick}>
             <div className="p-4 bg-opacity-50 bg-gray-900 rounded-full">
               <i className="fas fa-robot text-4xl"></i>
             </div>
             <p className="mt-2">AI</p>
           </div>
-          <div className="flex flex-col items-center cursor-pointer transform transition-transform duration-300 hover:scale-105" onClick={() => setIsLoginOpen(true)}>
+          <div className="flex flex-col items-center cursor-pointer transform transition-transform duration-300 hover:scale-105" onClick={handleCategoryClick}>
             <div className="p-4 bg-opacity-50 bg-gray-900 rounded-full">
               <i className="fas fa-shield-alt text-4xl"></i> 
             </div>
             <p className="mt-2">Cybersecurity</p>
           </div>
-          <div className="flex flex-col items-center cursor-pointer transform transition-transform duration-300 hover:scale-105" onClick={() => setIsLoginOpen(true)}>
+          <div className="flex flex-col items-center cursor-pointer transform transition-transform duration-300 hover:scale-105"  onClick={handleCategoryClick}>
             <div className="p-4 bg-opacity-50 bg-gray-900 rounded-full">
               <i className="fas fa-cube text-4xl"></i> 
             </div>
             <p className="mt-2">Blockchain</p>
           </div>
-          <div className="flex flex-col items-center cursor-pointer transform transition-transform duration-300 hover:scale-105" onClick={() => setIsLoginOpen(true)}>
+          <div className="flex flex-col items-center cursor-pointer transform transition-transform duration-300 hover:scale-105"  onClick={handleCategoryClick}>
             <div className="p-4 bg-opacity-50 bg-gray-900 rounded-full">
               <i className="fas fa-cloud text-4xl"></i> 
             </div>
             <p className="mt-2">Cloud Computing</p>
           </div>
-          <div className="flex flex-col items-center cursor-pointer transform transition-transform duration-300 hover:scale-105" onClick={() => setIsLoginOpen(true)}>
+          <div className="flex flex-col items-center cursor-pointer transform transition-transform duration-300 hover:scale-105"  onClick={handleCategoryClick}>
             <div className="p-4 bg-opacity-50 bg-gray-900 rounded-full">
               <i className="fas fa-laptop text-4xl"></i> 
             </div>
             <p className="mt-2">Tech Industri</p>
           </div>
-          <div className="flex flex-col items-center cursor-pointer transform transition-transform duration-300 hover:scale-105" onClick={() => setIsLoginOpen(true)}>
+          <div className="flex flex-col items-center cursor-pointer transform transition-transform duration-300 hover:scale-105"  onClick={handleCategoryClick}>
             <div className="p-4 bg-opacity-50 bg-gray-900 rounded-full">
               <i className="fas fa-network-wired text-4xl"></i> 
             </div>
             <p className="mt-2">IoT</p>
           </div>
         </motion.div>
-      <Articles />
+      
+      { isAuthenticated && <Articles />}
+
+
     </div>
     {isLoginOpen && (
       <CustomerLogin

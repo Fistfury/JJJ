@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb";
 import { connectToDatabase } from "../config/db";
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 import { SubscriptionLevel } from "../models/SubscriptionModel";
 import { stripe } from "../config/stripe";
 
@@ -83,7 +83,6 @@ export const createSubscription = async (req: Request, res: Response) => {
     
         try {
         const db = await connectToDatabase();
-        const user = db.collection("user");
         const collection = db.collection("subscriptions");
         const userExists = await collection.findOne({ "email": email });
     
@@ -92,7 +91,7 @@ export const createSubscription = async (req: Request, res: Response) => {
     
         } else if (userExists && userExists.subscriptionLevel !== subscriptionLevel) {
             const result = await collection.updateOne({"email": email}, {$set: {"subscriptionLevel": subscriptionLevel, "startDate": new Date()}});
-            return res.status(201).json({"message": "Subscription updated"});
+            return res.status(201).json(result);
             
         } 
         } catch (error) {
@@ -112,7 +111,7 @@ export const createSubscription = async (req: Request, res: Response) => {
         const _id = subscription?._id;
         console.log("_id:", _id);
 
-        await db.collection('subscriptions').updateOne({ _id: new ObjectId(_id) }, { $set: { subscriptionLevel: "noob" } });
+        await db.collection('subscriptions').updateOne({ _id: new ObjectId(_id) }, { $set: { subscriptionLevel: "paused" } });
         // TODO JLo: check date 
         
         res.json("Subscription paused");
@@ -143,27 +142,26 @@ export const createSubscription = async (req: Request, res: Response) => {
         }
     };
 
-
-/* export const getArticles = async (req: Request, res: Response, next: NextFunction) => {
+    try { 
     const db = await connectToDatabase();
-    const email = req.headers['email'] as string;
-    // TODO JLo: get user or id from session
-
-    const user = await db.collection('user').findOne({ email });
-
-    if(!user) {
-        return res.status(404).send('User not found');
+    const user = await db.collection('subscriptions').findOne({ "email": email });
+    if (!user) {
+        return res.status(404).json("User not found");
     }
+    const userSubscriptionLevel = user.subscriptionLevel as SubscriptionLevel;
+    const articleCursor = db.collection('articles').find({subscriptionLevel: {$lte: userSubscriptionLevel}});
+    const articles = await articleCursor.toArray();
+    /* const invalidArticles = articles.filter(article => article.subscriptionLevel > userSubscriptionLevel);
+        if (invalidArticles.length > 0) {
 
-    const articles = await db.collection('articles').find({}).toArray();
-    res.json(articles);
-
-    if (user.subscriptionLevel !== articles.subscriptionLevel) {
-
-    }
-  };
+            return res.status(403).json("Some articles exceed user's subscription level");
+        }
  */
-    // TODO JLo: get articles sub lvl 
-      // hämta user sub lvl
-      // filtrera artiklar baserat på user sub lvl
-      // lte > less than or equal
+
+    return res.json(articles);
+    
+
+    } catch (error) {
+    res.status(500).json('Error getting subscription levels');
+    }
+}

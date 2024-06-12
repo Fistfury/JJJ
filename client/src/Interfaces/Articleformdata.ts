@@ -4,6 +4,7 @@ interface ArticleFormData {
     content: string;
     imageUrl: string;
     subscriptionLevel: string;
+    category: string;
   }
 
   export default ArticleFormData;
