@@ -65,16 +65,16 @@ const Subscribe: React.FC<SubscribeFormProps> = ({
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-      <div className="bg-white p-8 rounded shadow-lg w-1/3">
-        <h2 className="text-xl font-bold mb-4">Påbörja prenumaration</h2>
+      <div className="bg-black text-gray-500 p-8 rounded shadow-lg w-1/3">
+        <h2 className="text-xl font-bold mb-4 text-white">Påbörja prenumaration</h2>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="mb-4">
-            <label className="block text-lg font-medium text-gray-700">
+            <label className="block text-lg font-medium text-gray-500">
               Välj prenumerationsnivå:
             </label>
             <select
               {...register("subscriptionLevel", { required: true })}
-              className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+              className="block w-full p-2 mt-1 border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
             >
               {prices.map((price) => (
                 <option key={price.id} value={price.id}>
@@ -85,20 +85,18 @@ const Subscribe: React.FC<SubscribeFormProps> = ({
             </select>
           </div>
           <div className="flex justify-end space-x-2">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-            >
-              Subscibe
-            </button>
-          </div>
+  <button
+    type="button"
+    onClick={onClose}
+    className="px-4 py-2 bg-slate-900 rounded hover:bg-slate-800"
+  >
+    Cancel
+  </button>
+  <button type="submit" className="relative overflow-hidden rounded-lg bg-black px-20 py-6 ring-blue-500/50 ring-offset-black will-change-transform focus:outline-none focus:ring-1 focus:ring-offset-2">
+          <span className="absolute inset-px z-10 grid place-items-center rounded-lg bg-black bg-gradient-to-t from-neutral-800 text-white">Subscribe</span>
+          <span aria-hidden className="absolute inset-0 z-0 scale-x-[2.0] blur before:absolute before:inset-0 before:top-1/2 before:aspect-square before:animate-disco before:bg-gradient-conic before:from-blue-700 before:via-blue-500 before:to-blue-300" />
+  </button>
+</div>
         </form>
       </div>
     </div>
