@@ -141,7 +141,11 @@ export const createSubscription = async (req: Request, res: Response) => {
             res.status(500).send("Error fetching subscription status");
         }
     };
-
+    export const getArticles = async (req: Request, res: Response) => {
+        const email = (req.session as Session).user?.email;
+        if (!email) {
+            return res.status(403).json({ error: 'Unauthorized' });
+        }
     try { 
     const db = await connectToDatabase();
     const user = await db.collection('subscriptions').findOne({ "email": email });
