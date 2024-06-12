@@ -22,8 +22,8 @@ const PauseSub = () => {
 }}
 
   return (
-    <div>
-        <button className="flex items-center mt-32" onClick={handlePause}>Pause sub</button>
+    <div className='flex items-center justify-start mt-10'>
+        <button className="btn btn-primary w-full" onClick={handlePause}>Pause subscription</button>
     </div>
   )
 }
