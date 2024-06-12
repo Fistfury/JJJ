@@ -21,7 +21,7 @@ const Articles = () => {
 }, [])
 
     return (
-      <div className="mt-8 mb-20 p-20 glass rounded-xl shadow-lg grid grid-cols-1 gap-9">
+      <div className="mt-8 mb-32 p-20 glass rounded-xl shadow-lg grid grid-cols-1 gap-9">
         <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {articles.map((article: { _id: string, imageUrl: string, title: string, content: string }) => (
             <li key={article._id} className="card glass shadow-md p-4 rounded-lg">
