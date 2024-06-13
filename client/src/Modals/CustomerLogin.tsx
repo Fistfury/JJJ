@@ -27,6 +27,9 @@ export const CustomerLogin: React.FC<CustomerLoginProps> = ({ isOpen, onClose, o
       console.log('User data:', userData);
   
       setUser(userData);
+        localStorage.setItem('user', JSON.stringify(userData));
+        localStorage.setItem('subscriptionId', userData.subscriptionId);
+        
     } catch (error) {
       console.error(error);
     }

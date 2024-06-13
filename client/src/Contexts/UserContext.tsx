@@ -3,6 +3,7 @@ import { createContext, useContext, useState, ReactNode } from 'react';
 interface User {
   email: string;
   stripeCustomerId: string;
+  subscriptionId?: string; 
 }
 
 interface UserContextProps {
