@@ -8,6 +8,5 @@ router.post("/create", createSubscription);
 router.put('/:_id', pauseSubscription);
 router.get("/articles", getArticles);
 router.put('/update/:_id', updateSubscription);
-router.get("/status", getSubscriptionStatus);
-
+router.get('/status/:subscriptionId', getSubscriptionStatus);
 export default router;

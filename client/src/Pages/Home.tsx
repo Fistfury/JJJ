@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {CustomerLogin} from '../Modals/CustomerLogin';
 import {CustomerRegister} from '../Modals/CustomerRegister';
 import { CustomerRegisterFormData } from '../Interfaces/CustomerRegisterFormData';
@@ -10,17 +10,48 @@ import logo from '../assets/logo-14.png';
 import { motion } from 'framer-motion';
 import Articles from '../Components/Articles';
 import { PaymentUpdateModal } from '../Modals/PaymentUpdate';
+import { useUser } from '../Contexts/UserContext';
+import { useNavigate } from 'react-router-dom';
 
 export const Home: React.FC = () => {
   const { isAuthenticated, setIsAuthenticated } = useAuth();
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
   const [isSubscribeOpen, setIsSubscribeOpen] = useState(false);
+  const { user } = useUser();
+  const [subscriptionStatus, setSubscriptionStatus] = useState('');
+  const [updateUrl, setUpdateUrl] = useState('');
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user?.subscriptionId) {
+        checkSubscriptionStatus();
+    } else {
+        // Hantera användare utan aktiv prenumeration här
+        console.log("Ingen aktiv prenumeration finns.");
+        // Potentiellt navigera till en sida där användaren kan prenumerera
+    }
+  }, [user, navigate]);
+
+  const checkSubscriptionStatus = async () => {
+    try {
+      const response = await fetch(`http://localhost:3000/api/subscriptions/status/${user?.subscriptionId}`);
+      const data = await response.json();
+      setSubscriptionStatus(data.status);
+      setUpdateUrl(data.updateUrl);
+
+      if (data.status !== 'past_due') {
+        navigate('/');
+      }
+    } catch (error) {
+      console.error('Failed to check subscription status', error);
+    }
+  };
 
   const handleLogin = async (data: CustomerLoginFormData) => {
     console.log('handleLogin called', data);
     try {
-      const response = await fetch('/api/auth/login', {
+      const response = await fetch('http://localhost:3000/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -134,8 +165,6 @@ export const Home: React.FC = () => {
             
           </div>
       <p className=" text-lg">CHOOSE A CATEGORY</p>
-      {/* <PaymentUpdateModal updateUrl="https://billing.stripe.com/p/subscription/update_payment_method_link/CBcaFwoVYWNjdF8xUDFURU9SdFJDYVpYeUV4KJawp7MGMgbxUAHWDDA6OtajftwlKw6z_4w0BLG-e8faTeDuO6shxnQbbFXtFfwTsXkUrQUACtIkHKqim82LScK9MOzVGtSI4_g" /> */}
-
       <motion.div
           initial={{ x: '-100vw' }}
           animate={{ x: 0 }}
@@ -181,6 +210,9 @@ export const Home: React.FC = () => {
             <p className="mt-2">IoT</p>
           </div>
         </motion.div>
+        {isAuthenticated && subscriptionStatus === 'past_due' && updateUrl && (
+        <PaymentUpdateModal updateUrl={updateUrl} />
+      )}
       
       { isAuthenticated && <Articles />}
 

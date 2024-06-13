@@ -38,6 +38,7 @@ const Subscribe: React.FC<SubscribeFormProps> = ({ isOpen, onClose, onSubscribe 
           headers: {
             "Content-Type": "application/json",
           },
+          credentials: 'include',
           body: JSON.stringify(dataToSend),
         }
       );

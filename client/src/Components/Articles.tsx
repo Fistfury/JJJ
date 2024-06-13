@@ -10,8 +10,13 @@ const Articles = () => {
             method: 'GET',
             credentials: 'include',
           });
-          const data = await response.json();
-          setArticles(data);
+          console.log('Response:', response);
+          if(response.status === 200) {
+            const data = await response.json();
+            setArticles(data);
+          } else {
+            console.log("No articles found");
+          } 
         } catch (error) {
           console.error('Error fetching articles:', error);
         }
@@ -19,7 +24,10 @@ const Articles = () => {
 
     fetchArticles();
 }, [])
-
+if (!articles) {
+      return <p>No articles found</p>;
+}
+console.log(articles);
     return (
       <div className="mt-8 mb-32 p-20 glass rounded-xl shadow-lg grid grid-cols-1 gap-9">
         <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">

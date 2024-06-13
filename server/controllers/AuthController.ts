@@ -21,6 +21,16 @@ interface Session {
     admin? : Admin;
 }
 
+interface Subscription {
+  _id?: string;
+  subscriptionId: string;
+  customerId: string;
+  email: string;
+  status: string;
+  subscriptionLevel: string;
+  createdAt: Date;
+}
+
 export const getUserDetails = async (req: Request, res: Response) => {
     try {
      
@@ -30,7 +40,7 @@ export const getUserDetails = async (req: Request, res: Response) => {
       }
   
       const userId = session.user._id;
-      const usersCollection = await getCollection<User>('users');
+      const usersCollection = await getCollection<User>('user');
       const user = await usersCollection.findOne({ _id: userId });
   
       if (!user) {
@@ -89,9 +99,19 @@ const login = async (req: Request, res: Response): Promise<void> => {
             return;
         }
 
+        // Hämta prenumeration för användaren
+        const subscriptionsCollection = await getCollection<Subscription>('subscriptions');
+        const subscription = await subscriptionsCollection.findOne({ customerId: userExists.stripeCustomerId });
+
         console.log(userExists);
-        (req.session as Session).user = userExists;
-        res.status(200).json({ email: userExists.email, stripeCustomerId: userExists.stripeCustomerId });
+        
+          (req.session as Session).user = userExists;
+          res.status(200).json({ 
+              email: userExists.email, 
+              stripeCustomerId: userExists.stripeCustomerId, 
+              subscriptionId: subscription?.subscriptionId 
+          });
+      
       } catch (error) {
         console.error(error);
         res.status(500).json('Serverfel');

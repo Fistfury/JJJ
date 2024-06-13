@@ -1,40 +1,44 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useUser } from '../Contexts/UserContext';  // Använder UserContext för att hämta användardata
 import { PaymentUpdateModal } from '../Modals/PaymentUpdate';
 
-
 export const SubscriptionCheckStatus = () => {
-    const [subscriptionStatus, setSubscriptionStatus] = useState<string>('');
+    const { user } = useUser(); // Hämta användarinfo från kontext
+    const [subscriptionStatus, setSubscriptionStatus] = useState('');
+    const [updateUrl, setUpdateUrl] = useState('');
     const navigate = useNavigate();
 
     useEffect(() => {
-        // API-anrop för att hämta prenumerationsstatus
-        const fetchSubscriptionStatus = async () => {
-            try {
-                const response = await fetch('/api/subscription/status');
-                const data = await response.json();
-                setSubscriptionStatus(data.status);
-            } catch (error) {
-                console.error('Failed to fetch subscription status', error);
-            }
-        };
+        if (user && user.subscriptionId) {
+            console.log(`Checking status for subscription ID: ${user.subscriptionId}`);
+            const fetchSubscriptionStatus = async () => {
+                try {
+                    const response = await fetch(`http://localhost:3000/api/subscriptions/status/${user.subscriptionId}`);
+                    const data = await response.json();
+                    console.log(`Subscription status response: `, data);
+                    setSubscriptionStatus(data.status);
+                    setUpdateUrl(data.updateUrl);
+                    if (data.status !== 'past_due') {
+                        navigate('/'); // Navigera bort om inte past_due
+                    }
+                } catch (error) {
+                    console.error('Failed to fetch subscription status', error);
+                }
+            };
 
-        fetchSubscriptionStatus();
-    }, []);
-
-    const checkAndRedirect = () => {
-        if (subscriptionStatus !== 'past_due') {
-            navigate('/'); // Om betalningen lyckas, navigera användaren
+            fetchSubscriptionStatus();
         }
-    };
+    }, [user, navigate]);
 
-    return (
-        <>
-            {subscriptionStatus === 'past_due' && (
-                <PaymentUpdateModal
-                    updateUrl="https://billing.stripe.com/p/subscription/update_payment_method_link/CBcaFwoVYWNjdF8xUDFURU9SdFJDYVpYeEV4KLupp7MGMgbJo6lFIPg6OtbTpW0_cQnAWN5SO2j9W9jUUU8JtGxM5X_eIryPFx6YLEOHg4RQ4U1DQt-bHTjB6Qbl1-lZ0OV8HFM"
-                />
-            )}
-        </>
-    );
+    useEffect(() => {
+        console.log(`Current subscription status: ${subscriptionStatus}`);
+        if (subscriptionStatus !== 'past_due' && subscriptionStatus) {
+            navigate('/'); // Om betalningen lyckas, navigera användaren till huvudsidan
+        }
+    }, [subscriptionStatus, navigate]);
+
+    return subscriptionStatus === 'past_due' && updateUrl ? (
+        <PaymentUpdateModal updateUrl={updateUrl} />
+    ) : null;
 };
