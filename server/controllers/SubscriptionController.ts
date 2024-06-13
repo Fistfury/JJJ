@@ -110,19 +110,31 @@ export const createSubscription = async (req: Request, res: Response) => {
         try {
         const db = await connectToDatabase();
         const collection = db.collection("subscriptions");
-        const userExists = await collection.findOne({ "email": email });
+        const user = await collection.findOne({ "email": email });
     
-        if (userExists && userExists.subscriptionLevel === subscriptionLevel) {
+        if (user && user.subscriptionLevel === subscriptionLevel) {
             return res.status(409).json("Already subscribed");
     
-        } else if (userExists && userExists.subscriptionLevel !== subscriptionLevel) {
+        } else if (user && user.subscriptionLevel !== subscriptionLevel) {
             const result = await collection.updateOne({"email": email}, {$set: {"subscriptionLevel": subscriptionLevel, "startDate": new Date()}});
+            const updatedSubscription = await db.collection("users").updateOne(
+                { email },
+                { $set: { 
+                  subscriptionLevel, 
+                  startDate: new Date(),
+                  customerId: user.stripeCustomerId,
+                } },
+                { upsert: true }
+              );
+        
+              console.log("Database update result:", updatedSubscription);
+              res.status(201).json({ subscriptionLevel });
             return res.status(201).json(result);
             
         } 
         } catch (error) {
-            console.error("Error creating subscription:", error);
-            res.status(500).send("Error creating subscription");
+            console.error("Error updating subscription:", error);
+            res.status(500).send("Error updating subscription");
         }
         };
 

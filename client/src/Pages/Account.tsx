@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import PauseSub from "../Components/PauseSub";
 import { motion } from "framer-motion";
 import { IUser } from "../Interfaces/IUser";
+import UpdateSub from "../Components/UpdateSub";
 
 export const Account = () => {
 
@@ -65,6 +66,7 @@ export const Account = () => {
             Your subscription level: <span className="text-teal-300 ml-2">{subscription}</span>
           </p>
           <PauseSub />
+          <UpdateSub />
         </div>
       </motion.div>
     </div>

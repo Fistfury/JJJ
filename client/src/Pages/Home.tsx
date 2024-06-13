@@ -214,7 +214,7 @@ export const Home: React.FC = () => {
         <PaymentUpdateModal updateUrl={updateUrl} />
       )}
       
-      { isAuthenticated && <Articles />}
+      { isAuthenticated && subscriptionStatus === 'active' && <Articles />}
 
 
     </div>
