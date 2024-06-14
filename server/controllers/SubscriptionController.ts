@@ -103,40 +103,31 @@ export const createSubscription = async (req: Request, res: Response) => {
     }
 };
 
-    export const updateSubscription = async (req: Request, res: Response) => {
-        const { subscriptionLevel } = req.body;
-        let email = (req.session as Session).user?.email
-    
-        try {
-        const db = await connectToDatabase();
-        const collection = db.collection("subscriptions");
-        const user = await collection.findOne({ "email": email });
-    
-        if (user && user.subscriptionLevel === subscriptionLevel) {
-            return res.status(409).json("Already subscribed");
-    
-        } else if (user && user.subscriptionLevel !== subscriptionLevel) {
-            const result = await collection.updateOne({"email": email}, {$set: {"subscriptionLevel": subscriptionLevel, "startDate": new Date()}});
-            const updatedSubscription = await db.collection("users").updateOne(
-                { email },
-                { $set: { 
-                  subscriptionLevel, 
-                  startDate: new Date(),
-                  customerId: user.stripeCustomerId,
-                } },
-                { upsert: true }
-              );
+
+export const updateSubscription = async (req: Request, res: Response) => {
+    const { subscriptionLevel } = req.body;
+    let email = (req.session as Session).user?.email
+
+    try {
+    const db = await connectToDatabase();
+    const collection = db.collection("subscriptions");
+    const userExists = await collection.findOne({ "email": email });
+
+    if (userExists && userExists.subscriptionLevel === subscriptionLevel) {
+        return res.status(409).json("Already subscribed");
+
+    } else if (userExists && userExists.subscriptionLevel !== subscriptionLevel) {
         
-              console.log("Database update result:", updatedSubscription);
-              res.status(201).json({ subscriptionLevel });
-            return res.status(201).json(result);
-            
-        } 
-        } catch (error) {
-            console.error("Error updating subscription:", error);
-            res.status(500).send("Error updating subscription");
-        }
-        };
+        const result = await collection.updateOne({"email": email}, {$set: {"subscriptionLevel": subscriptionLevel, "startDate": new Date()}});
+        return res.status(201).json(result);
+        
+    } 
+    } catch (error) {
+        console.error("Error creating subscription:", error);
+        res.status(500).send("Error creating subscription");
+    }
+    };
+
 
     
     export const pauseSubscription = async (req: Request, res: Response) => {
@@ -164,7 +155,7 @@ export const createSubscription = async (req: Request, res: Response) => {
 
         const { subscriptionId } = req.params;
       
-        // console.log(`Received request to get status for subscription: ${subscriptionId}`);
+        console.log(`Received request to get status for subscription: ${subscriptionId}`);
       
         if (!subscriptionId) {
           return res.status(400).json({ error: 'Subscription ID is required' });
@@ -175,7 +166,7 @@ export const createSubscription = async (req: Request, res: Response) => {
           const subscription = await db.collection('subscriptions').findOne({ subscriptionId });
       
           if (!subscription) {
-            // console.error(`No subscription found in database with ID: ${subscriptionId}`);
+            console.error(`No subscription found in database with ID: ${subscriptionId}`);
             return res.status(404).json({ error: 'Subscription not found' });
           }
       
@@ -184,10 +175,10 @@ export const createSubscription = async (req: Request, res: Response) => {
           // Retrieve the Stripe subscription using the subscriptionId
           const stripeSubscription = await stripe.subscriptions.retrieve(subscriptionId);
       
-        //   console.log(`Retrieved subscription from Stripe:`, (stripeSubscription));
+        console.log(`Retrieved subscription from Stripe:`, (stripeSubscription));
           const invoiceId = stripeSubscription.latest_invoice as string;
           const invoice = await stripe.invoices.retrieve(invoiceId);
-        //   console.log(`Retrieved invoice from Stripe:`, (invoice));
+        console.log(`Retrieved invoice from Stripe:`, (invoice));
           const updateUrl = invoice.hosted_invoice_url;
       
           res.json({ status: stripeSubscription.status, updateUrl });
