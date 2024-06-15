@@ -43,7 +43,7 @@ export const createSubscription = async (req: Request, res: Response) => {
       const db = await connectToDatabase();
       const usersCollection = db.collection("user");
       let user = await usersCollection.findOne({ email });
-
+      
       // Kontrollera att en användare faktiskt hittades
       if (!user) {
         res.status(404).json({ error: "User not found" });
@@ -57,10 +57,10 @@ export const createSubscription = async (req: Request, res: Response) => {
       if (!user.stripeCustomerId) {
         const newCustomer = await stripe.customers.create({ email });
         user.stripeCustomerId = newCustomer.id;
-        await usersCollection.updateOne({ email }, { $set: { customerId: user.stripeCustomerId } });
+        await user.Collection.updateOne({ email }, { $set: { customerId: user.stripeCustomerId } });
         console.log("Created new Stripe customer:", newCustomer);
       }
-
+      
       const subscription = await stripe.subscriptions.create({
         customer: user.stripeCustomerId,
         items: [{ price: priceId }],
@@ -83,7 +83,7 @@ export const createSubscription = async (req: Request, res: Response) => {
       const paymentIntentId = (invoice.payment_intent as Stripe.PaymentIntent).id;
       console.log("Payment Intent ID:", paymentIntentId);
 
-      const updateResult = await usersCollection.updateOne(
+      const updateResult = await user.Collection.updateOne(
         { email },
         { $set: { 
           subscriptionLevel, 
@@ -112,15 +112,19 @@ export const updateSubscription = async (req: Request, res: Response) => {
     const db = await connectToDatabase();
     const collection = db.collection("subscriptions");
     const userExists = await collection.findOne({ "email": email });
-
-    if (userExists && userExists.subscriptionLevel === subscriptionLevel) {
+    if (userExists) {
+      if (userExists && userExists.subscriptionLevel === subscriptionLevel) {
         return res.status(409).json("Already subscribed");
 
-    } else if (userExists && userExists.subscriptionLevel !== subscriptionLevel) {
-        
-        const result = await collection.updateOne({"email": email}, {$set: {"subscriptionLevel": subscriptionLevel, "startDate": new Date()}});
-        return res.status(201).json(result);
-        
+    } else  {
+        const result = await collection.updateOne(
+          {"email": email}, {$set: 
+            {"subscriptionLevel": subscriptionLevel, "startDate": new Date()}});
+        console.log(result);
+        return res.status(200).json(result);
+    }  
+    } else {
+      return res.status(404).json("User not found");
     } 
     } catch (error) {
         console.error("Error creating subscription:", error);
@@ -202,12 +206,7 @@ export const updateSubscription = async (req: Request, res: Response) => {
     const userSubscriptionLevel = user.subscriptionLevel as SubscriptionLevel;
     const articleCursor = db.collection('articles').find({subscriptionLevel: {$lte: userSubscriptionLevel}});
     const articles = await articleCursor.toArray();
-    /* const invalidArticles = articles.filter(article => article.subscriptionLevel > userSubscriptionLevel);
-        if (invalidArticles.length > 0) {
 
-            return res.status(403).json("Some articles exceed user's subscription level");
-        }
- */
 
     return res.json(articles);
     

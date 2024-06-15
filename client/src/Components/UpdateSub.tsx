@@ -61,6 +61,7 @@ export const UpdateSub: React.FC<SubscribeFormProps> = ({ isOpen, onClose, onSub
           console.error("User is not logged in");
           return;
         }
+
         console.log("User data:", user);
         const selectedPrice = prices.find(price => price.id === data.priceId);
         const dataToSend: SubscribeFormData = {
@@ -70,23 +71,30 @@ export const UpdateSub: React.FC<SubscribeFormProps> = ({ isOpen, onClose, onSub
           subscriptionLevel: selectedPrice ? selectedPrice.name : "",
         };
         console.log("Sending data:", dataToSend);
-        handleSubscription(dataToSend);
+        setSubscriptionLevel(selectedPrice ? selectedPrice.name : "");
+        await handleSubscription(dataToSend);
         onSubscribe(data);
-        const subscriptionLevel = await fetch(`http://localhost:3000/api/subscriptions/update${user?.subscriptionId}`,
-            {   method: 'PUT', 
-                credentials: 'include', 
-                body: JSON.stringify(setSubscriptionLevel)}
-        )
-
-        if (subscriptionLevel.ok) {
-            console.log("Subscription level updated successfully");
-
-            setSubscriptionLevel(data.subscriptionLevel);
-
-        } else {
-            console.error('Error:', subscriptionLevel.statusText);
-        }
-
+        try {
+        const response = await fetch(`http://localhost:3000/api/subscriptions/update/${user?.subscriptionId}`,
+            {   method: 'PUT',
+              headers: {
+                  "Content-Type": "application/json",
+              },
+              credentials: 'include',
+              body: JSON.stringify({ subscriptionLevel: selectedPrice ? selectedPrice.name : "" }),
+          });
+          if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(
+              `Server responded with ${response.status}: ${errorText}`
+            );
+          }
+            const result = await response.json();
+            console.log("Subscription updated", result);
+          } catch(error) {
+            console.error("Error updating subscription:", error);
+          
+          }    
       };
     
       if (!isOpen) return null;
@@ -127,49 +135,9 @@ export const UpdateSub: React.FC<SubscribeFormProps> = ({ isOpen, onClose, onSub
           </div>
         </form>
       </div>
-/*             <button className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"  onClick={() => updateSubscription('price_1PObUYRtRCaZXyExUhlbRhJm')}>Prenumerera på Dev Basics</button>
-            <button className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"  onClick={() => updateSubscription('price_1PObVURtRCaZXyExHWQoyoRS')}>Prenumerera på Dev Plus</button>
-            <button className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"  onClick={() => updateSubscription('price_1POcLfRtRCaZXyExsq693pIp')}>Prenumerera på Dev Dominator</button>
- */
+
     );
-}
+};
 
-
-
-
-
-
-
-
-/* import { useState } from 'react';
-import { useParams } from 'react-router-dom';
-
-const UpdateSub = () => {
-    const { _id } = useParams();
-    const [subscriptionLevel, setSubscriptionLevel] = useState("");
-
-    const handleUpdate = async () => {
-        const response = await fetch(`http://localhost:3000/api/subscriptions/update${_id}`, {
-            method: 'PUT',
-            credentials: 'include',
-            body: JSON.stringify(setSubscriptionLevel),
-    });
-
-    if (response.ok) {
-        const result = await response.json();
-        console.log(result);
-    } else {
-        console.error('Error:', response.statusText);
-    }
-    return subscriptionLevel;
-}
-
-return (
-    <div className='flex items-center justify-start mt-10'>
-        <button className="btn btn-primary w-full" onClick={handleUpdate}>Update subscription</button>
-    </div>
-  )
-}
-*/
 export default UpdateSub 
 
