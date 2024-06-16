@@ -119,7 +119,7 @@ export const updateSubscription = async (req: Request, res: Response) => {
     } else  {
         const result = await collection.updateOne(
           {"email": email}, {$set: 
-            {"subscriptionLevel": subscriptionLevel, "startDate": new Date()}});
+            {"subscriptionLevel": subscriptionLevel, "createdAt": new Date()}});
         console.log(result);
         return res.status(200).json(result);
     }  
