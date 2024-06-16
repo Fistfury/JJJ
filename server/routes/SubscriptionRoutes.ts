@@ -5,7 +5,7 @@ const router = Router();
 
 router.get("/", getSubscriptionLevels);
 router.post("/create", createSubscription);
-router.put('/:_id', pauseSubscription);
+router.put("/:subscriptionId", pauseSubscription);
 router.get("/articles", getArticles);
 router.put('/update/:_id', updateSubscription);
 router.get('/status/:subscriptionId', getSubscriptionStatus);

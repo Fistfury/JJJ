@@ -5,6 +5,7 @@ import { SubscriptionLevel } from "../models/SubscriptionModel";
 import { stripe } from "../config/stripe";
 import Stripe from "stripe";
 
+
 interface User {
     email: string;
     password: string;
@@ -127,25 +128,30 @@ export const updateSubscription = async (req: Request, res: Response) => {
       return res.status(404).json("User not found");
     } 
     } catch (error) {
-        console.error("Error creating subscription:", error);
-        res.status(500).send("Error creating subscription");
+        console.error("Error updating subscription:", error);
+        res.status(500).send("Error updating subscription");
     }
     };
 
-
-    
+  
     export const pauseSubscription = async (req: Request, res: Response) => {
-        try {
+      let email = (req.session as Session).user?.email;
+      
+      console.log(`Received request to pause subscription for email: ${email}`);
+      
+      try {
         const db = await connectToDatabase();
-        const email = (req.session as Session).user?.email;
-        console.log(email);
-
-        const subscription = await db.collection('subscriptions').findOne({ "email": email });
-        const _id = subscription?._id;
-        console.log("_id:", _id);
-
-        await db.collection('subscriptions').updateOne({ _id: new ObjectId(_id) }, { $set: { subscriptionLevel: "paused" } });
-        // TODO JLo: check date 
+        
+        const user = await db.collection('subscriptions').findOne({ "email": email });
+        const subscriptionId = user?.subscriptionId;
+        console.log("subscriptionId:", subscriptionId);
+        if (!subscriptionId) {
+          return res.status(404).json("SubscriptionId not found");
+        }
+        const pauseSubscription = await stripe.subscriptions.update(subscriptionId, { cancel_at_period_end: true });
+        await db.collection('subscriptions').updateOne({"email": email} , { $set: { cancel_at_period_end: true } });
+        
+        console.log("Subscription paused:", pauseSubscription);
         
         res.json("Subscription paused");
                 
