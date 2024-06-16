@@ -2,12 +2,15 @@ import { useEffect, useState } from "react";
 import PauseSub from "../Components/PauseSub";
 import { motion } from "framer-motion";
 import { IUser } from "../Interfaces/IUser";
+import UpdateSub  from "../Components/UpdateSub";
+import { NavLink } from "react-router-dom";
+import { SubscribeFormData } from "../Interfaces/SubscribeFormData";
 
 export const Account = () => {
 
   const [subscription, setSubscription] = useState([]);
   const [user, setUser] = useState<IUser | null>(null);
-
+  const [update, setUpdate] = useState(false);
 
   const fetchSubscription = async () => {
     try {
@@ -46,6 +49,11 @@ export const Account = () => {
     fetchUserDetails();
   }, []);
 
+  if (update === true) {
+    return <UpdateSub isOpen={update} onClose={() => setUpdate(false)} onSubscribe={() => setUpdate(false)}/>
+  }
+
+
   return (
     <div className="relative flex items-center justify-center min-h-screen bg-cover bg-gray-800 bg-opacity-50">
       <div className="absolute inset-0 bg-black opacity-50"></div>
@@ -65,6 +73,7 @@ export const Account = () => {
             Your subscription level: <span className="text-teal-300 ml-2">{subscription}</span>
           </p>
           <PauseSub />
+          <button onClick={() => setUpdate(true)} className="bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded">Change subscription</button>
         </div>
       </motion.div>
     </div>
