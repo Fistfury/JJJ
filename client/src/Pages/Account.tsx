@@ -73,7 +73,9 @@ export const Account = () => {
             Your subscription level: <span className="text-teal-300 ml-2">{subscription}</span>
           </p>
           <PauseSub />
-          <button onClick={() => setUpdate(true)} className="bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded">Change subscription</button>
+          <div className='flex items-center justify-start mt-10'>
+        <button className="btn btn-primary w-full" onClick={() => setUpdate(true)}>Change subscription</button>
+      </div>
         </div>
       </motion.div>
     </div>
